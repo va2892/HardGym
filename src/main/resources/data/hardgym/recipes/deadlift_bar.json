@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    " C ",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:chain"
+    }
+  },
+  "result": {
+    "item": "hardgym:deadlift_bar",
+    "count": 1
+  }
+}

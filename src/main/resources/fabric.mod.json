@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "hardgym",
+  "version": "${version}",
+  "name": "HardGym",
+  "description": "A full gym progression mod for Fabric 1.16.5.",
+  "authors": [
+    "HardGym Team"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.hardgym.HardGymMod"
+    ],
+    "client": [
+      "com.hardgym.client.HardGymClient"
+    ]
+  },
+  "mixins": [
+    "hardgym.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.12.12",
+    "fabric": "*",
+    "minecraft": "1.16.5",
+    "java": ">=8"
+  }
+}

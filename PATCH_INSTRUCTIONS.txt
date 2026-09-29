@@ -1,0 +1,8 @@
+HardGym v0.5.2 — Plate System
+
+1. Скопируй содержимое архива в C:\Users\Kiril\Downloads\HardGym_v0.1_source\ с заменой файлов.
+2. Выполни: .\gradlew.bat clean build
+3. Возьми build\libs\hardgym-0.5.2.jar и замени старый HardGym в mods.
+
+Весовая линейка: 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200 кг.
+Все блины одинаковой ширины.

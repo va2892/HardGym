@@ -1,0 +1,1174 @@
+{
+  "variants": {
+    "facing=north,weight=0,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a0"
+    },
+    "facing=north,weight=0,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a0"
+    },
+    "facing=north,weight=0,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a1"
+    },
+    "facing=north,weight=0,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a1"
+    },
+    "facing=north,weight=0,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a2"
+    },
+    "facing=north,weight=0,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a2"
+    },
+    "facing=north,weight=1,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a0"
+    },
+    "facing=north,weight=1,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a0"
+    },
+    "facing=north,weight=1,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a1"
+    },
+    "facing=north,weight=1,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a1"
+    },
+    "facing=north,weight=1,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a2"
+    },
+    "facing=north,weight=1,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a2"
+    },
+    "facing=north,weight=2,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a0"
+    },
+    "facing=north,weight=2,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a0"
+    },
+    "facing=north,weight=2,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a1"
+    },
+    "facing=north,weight=2,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a1"
+    },
+    "facing=north,weight=2,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a2"
+    },
+    "facing=north,weight=2,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a2"
+    },
+    "facing=north,weight=3,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a0"
+    },
+    "facing=north,weight=3,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a0"
+    },
+    "facing=north,weight=3,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a1"
+    },
+    "facing=north,weight=3,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a1"
+    },
+    "facing=north,weight=3,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a2"
+    },
+    "facing=north,weight=3,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a2"
+    },
+    "facing=north,weight=4,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a0"
+    },
+    "facing=north,weight=4,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a0"
+    },
+    "facing=north,weight=4,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a1"
+    },
+    "facing=north,weight=4,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a1"
+    },
+    "facing=north,weight=4,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a2"
+    },
+    "facing=north,weight=4,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a2"
+    },
+    "facing=north,weight=5,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a0"
+    },
+    "facing=north,weight=5,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a0"
+    },
+    "facing=north,weight=5,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a1"
+    },
+    "facing=north,weight=5,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a1"
+    },
+    "facing=north,weight=5,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a2"
+    },
+    "facing=north,weight=5,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a2"
+    },
+    "facing=north,weight=6,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a0"
+    },
+    "facing=north,weight=6,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a0"
+    },
+    "facing=north,weight=6,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a1"
+    },
+    "facing=north,weight=6,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a1"
+    },
+    "facing=north,weight=6,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a2"
+    },
+    "facing=north,weight=6,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a2"
+    },
+    "facing=north,weight=7,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a0"
+    },
+    "facing=north,weight=7,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a0"
+    },
+    "facing=north,weight=7,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a1"
+    },
+    "facing=north,weight=7,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a1"
+    },
+    "facing=north,weight=7,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a2"
+    },
+    "facing=north,weight=7,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a2"
+    },
+    "facing=north,weight=8,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a0"
+    },
+    "facing=north,weight=8,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a0"
+    },
+    "facing=north,weight=8,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a1"
+    },
+    "facing=north,weight=8,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a1"
+    },
+    "facing=north,weight=8,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a2"
+    },
+    "facing=north,weight=8,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a2"
+    },
+    "facing=north,weight=9,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a0"
+    },
+    "facing=north,weight=9,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a0"
+    },
+    "facing=north,weight=9,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a1"
+    },
+    "facing=north,weight=9,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a1"
+    },
+    "facing=north,weight=9,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a2"
+    },
+    "facing=north,weight=9,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a2"
+    },
+    "facing=north,weight=10,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a0"
+    },
+    "facing=north,weight=10,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a0"
+    },
+    "facing=north,weight=10,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a1"
+    },
+    "facing=north,weight=10,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a1"
+    },
+    "facing=north,weight=10,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a2"
+    },
+    "facing=north,weight=10,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a2"
+    },
+    "facing=north,weight=11,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a0"
+    },
+    "facing=north,weight=11,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a0"
+    },
+    "facing=north,weight=11,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a1"
+    },
+    "facing=north,weight=11,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a1"
+    },
+    "facing=north,weight=11,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a2"
+    },
+    "facing=north,weight=11,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a2"
+    },
+    "facing=east,weight=0,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a0",
+      "y": 90
+    },
+    "facing=east,weight=0,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a0",
+      "y": 90
+    },
+    "facing=east,weight=0,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a1",
+      "y": 90
+    },
+    "facing=east,weight=0,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a1",
+      "y": 90
+    },
+    "facing=east,weight=0,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a2",
+      "y": 90
+    },
+    "facing=east,weight=0,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a2",
+      "y": 90
+    },
+    "facing=east,weight=1,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a0",
+      "y": 90
+    },
+    "facing=east,weight=1,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a0",
+      "y": 90
+    },
+    "facing=east,weight=1,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a1",
+      "y": 90
+    },
+    "facing=east,weight=1,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a1",
+      "y": 90
+    },
+    "facing=east,weight=1,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a2",
+      "y": 90
+    },
+    "facing=east,weight=1,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a2",
+      "y": 90
+    },
+    "facing=east,weight=2,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a0",
+      "y": 90
+    },
+    "facing=east,weight=2,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a0",
+      "y": 90
+    },
+    "facing=east,weight=2,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a1",
+      "y": 90
+    },
+    "facing=east,weight=2,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a1",
+      "y": 90
+    },
+    "facing=east,weight=2,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a2",
+      "y": 90
+    },
+    "facing=east,weight=2,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a2",
+      "y": 90
+    },
+    "facing=east,weight=3,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a0",
+      "y": 90
+    },
+    "facing=east,weight=3,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a0",
+      "y": 90
+    },
+    "facing=east,weight=3,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a1",
+      "y": 90
+    },
+    "facing=east,weight=3,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a1",
+      "y": 90
+    },
+    "facing=east,weight=3,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a2",
+      "y": 90
+    },
+    "facing=east,weight=3,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a2",
+      "y": 90
+    },
+    "facing=east,weight=4,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a0",
+      "y": 90
+    },
+    "facing=east,weight=4,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a0",
+      "y": 90
+    },
+    "facing=east,weight=4,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a1",
+      "y": 90
+    },
+    "facing=east,weight=4,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a1",
+      "y": 90
+    },
+    "facing=east,weight=4,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a2",
+      "y": 90
+    },
+    "facing=east,weight=4,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a2",
+      "y": 90
+    },
+    "facing=east,weight=5,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a0",
+      "y": 90
+    },
+    "facing=east,weight=5,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a0",
+      "y": 90
+    },
+    "facing=east,weight=5,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a1",
+      "y": 90
+    },
+    "facing=east,weight=5,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a1",
+      "y": 90
+    },
+    "facing=east,weight=5,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a2",
+      "y": 90
+    },
+    "facing=east,weight=5,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a2",
+      "y": 90
+    },
+    "facing=east,weight=6,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a0",
+      "y": 90
+    },
+    "facing=east,weight=6,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a0",
+      "y": 90
+    },
+    "facing=east,weight=6,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a1",
+      "y": 90
+    },
+    "facing=east,weight=6,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a1",
+      "y": 90
+    },
+    "facing=east,weight=6,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a2",
+      "y": 90
+    },
+    "facing=east,weight=6,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a2",
+      "y": 90
+    },
+    "facing=east,weight=7,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a0",
+      "y": 90
+    },
+    "facing=east,weight=7,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a0",
+      "y": 90
+    },
+    "facing=east,weight=7,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a1",
+      "y": 90
+    },
+    "facing=east,weight=7,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a1",
+      "y": 90
+    },
+    "facing=east,weight=7,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a2",
+      "y": 90
+    },
+    "facing=east,weight=7,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a2",
+      "y": 90
+    },
+    "facing=east,weight=8,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a0",
+      "y": 90
+    },
+    "facing=east,weight=8,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a0",
+      "y": 90
+    },
+    "facing=east,weight=8,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a1",
+      "y": 90
+    },
+    "facing=east,weight=8,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a1",
+      "y": 90
+    },
+    "facing=east,weight=8,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a2",
+      "y": 90
+    },
+    "facing=east,weight=8,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a2",
+      "y": 90
+    },
+    "facing=east,weight=9,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a0",
+      "y": 90
+    },
+    "facing=east,weight=9,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a0",
+      "y": 90
+    },
+    "facing=east,weight=9,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a1",
+      "y": 90
+    },
+    "facing=east,weight=9,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a1",
+      "y": 90
+    },
+    "facing=east,weight=9,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a2",
+      "y": 90
+    },
+    "facing=east,weight=9,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a2",
+      "y": 90
+    },
+    "facing=east,weight=10,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a0",
+      "y": 90
+    },
+    "facing=east,weight=10,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a0",
+      "y": 90
+    },
+    "facing=east,weight=10,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a1",
+      "y": 90
+    },
+    "facing=east,weight=10,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a1",
+      "y": 90
+    },
+    "facing=east,weight=10,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a2",
+      "y": 90
+    },
+    "facing=east,weight=10,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a2",
+      "y": 90
+    },
+    "facing=east,weight=11,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a0",
+      "y": 90
+    },
+    "facing=east,weight=11,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a0",
+      "y": 90
+    },
+    "facing=east,weight=11,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a1",
+      "y": 90
+    },
+    "facing=east,weight=11,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a1",
+      "y": 90
+    },
+    "facing=east,weight=11,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a2",
+      "y": 90
+    },
+    "facing=east,weight=11,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a2",
+      "y": 90
+    },
+    "facing=south,weight=0,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a0",
+      "y": 180
+    },
+    "facing=south,weight=0,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a0",
+      "y": 180
+    },
+    "facing=south,weight=0,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a1",
+      "y": 180
+    },
+    "facing=south,weight=0,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a1",
+      "y": 180
+    },
+    "facing=south,weight=0,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a2",
+      "y": 180
+    },
+    "facing=south,weight=0,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a2",
+      "y": 180
+    },
+    "facing=south,weight=1,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a0",
+      "y": 180
+    },
+    "facing=south,weight=1,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a0",
+      "y": 180
+    },
+    "facing=south,weight=1,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a1",
+      "y": 180
+    },
+    "facing=south,weight=1,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a1",
+      "y": 180
+    },
+    "facing=south,weight=1,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a2",
+      "y": 180
+    },
+    "facing=south,weight=1,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a2",
+      "y": 180
+    },
+    "facing=south,weight=2,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a0",
+      "y": 180
+    },
+    "facing=south,weight=2,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a0",
+      "y": 180
+    },
+    "facing=south,weight=2,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a1",
+      "y": 180
+    },
+    "facing=south,weight=2,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a1",
+      "y": 180
+    },
+    "facing=south,weight=2,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a2",
+      "y": 180
+    },
+    "facing=south,weight=2,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a2",
+      "y": 180
+    },
+    "facing=south,weight=3,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a0",
+      "y": 180
+    },
+    "facing=south,weight=3,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a0",
+      "y": 180
+    },
+    "facing=south,weight=3,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a1",
+      "y": 180
+    },
+    "facing=south,weight=3,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a1",
+      "y": 180
+    },
+    "facing=south,weight=3,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a2",
+      "y": 180
+    },
+    "facing=south,weight=3,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a2",
+      "y": 180
+    },
+    "facing=south,weight=4,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a0",
+      "y": 180
+    },
+    "facing=south,weight=4,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a0",
+      "y": 180
+    },
+    "facing=south,weight=4,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a1",
+      "y": 180
+    },
+    "facing=south,weight=4,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a1",
+      "y": 180
+    },
+    "facing=south,weight=4,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a2",
+      "y": 180
+    },
+    "facing=south,weight=4,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a2",
+      "y": 180
+    },
+    "facing=south,weight=5,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a0",
+      "y": 180
+    },
+    "facing=south,weight=5,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a0",
+      "y": 180
+    },
+    "facing=south,weight=5,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a1",
+      "y": 180
+    },
+    "facing=south,weight=5,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a1",
+      "y": 180
+    },
+    "facing=south,weight=5,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a2",
+      "y": 180
+    },
+    "facing=south,weight=5,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a2",
+      "y": 180
+    },
+    "facing=south,weight=6,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a0",
+      "y": 180
+    },
+    "facing=south,weight=6,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a0",
+      "y": 180
+    },
+    "facing=south,weight=6,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a1",
+      "y": 180
+    },
+    "facing=south,weight=6,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a1",
+      "y": 180
+    },
+    "facing=south,weight=6,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a2",
+      "y": 180
+    },
+    "facing=south,weight=6,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a2",
+      "y": 180
+    },
+    "facing=south,weight=7,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a0",
+      "y": 180
+    },
+    "facing=south,weight=7,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a0",
+      "y": 180
+    },
+    "facing=south,weight=7,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a1",
+      "y": 180
+    },
+    "facing=south,weight=7,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a1",
+      "y": 180
+    },
+    "facing=south,weight=7,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a2",
+      "y": 180
+    },
+    "facing=south,weight=7,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a2",
+      "y": 180
+    },
+    "facing=south,weight=8,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a0",
+      "y": 180
+    },
+    "facing=south,weight=8,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a0",
+      "y": 180
+    },
+    "facing=south,weight=8,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a1",
+      "y": 180
+    },
+    "facing=south,weight=8,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a1",
+      "y": 180
+    },
+    "facing=south,weight=8,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a2",
+      "y": 180
+    },
+    "facing=south,weight=8,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a2",
+      "y": 180
+    },
+    "facing=south,weight=9,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a0",
+      "y": 180
+    },
+    "facing=south,weight=9,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a0",
+      "y": 180
+    },
+    "facing=south,weight=9,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a1",
+      "y": 180
+    },
+    "facing=south,weight=9,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a1",
+      "y": 180
+    },
+    "facing=south,weight=9,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a2",
+      "y": 180
+    },
+    "facing=south,weight=9,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a2",
+      "y": 180
+    },
+    "facing=south,weight=10,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a0",
+      "y": 180
+    },
+    "facing=south,weight=10,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a0",
+      "y": 180
+    },
+    "facing=south,weight=10,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a1",
+      "y": 180
+    },
+    "facing=south,weight=10,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a1",
+      "y": 180
+    },
+    "facing=south,weight=10,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a2",
+      "y": 180
+    },
+    "facing=south,weight=10,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a2",
+      "y": 180
+    },
+    "facing=south,weight=11,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a0",
+      "y": 180
+    },
+    "facing=south,weight=11,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a0",
+      "y": 180
+    },
+    "facing=south,weight=11,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a1",
+      "y": 180
+    },
+    "facing=south,weight=11,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a1",
+      "y": 180
+    },
+    "facing=south,weight=11,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a2",
+      "y": 180
+    },
+    "facing=south,weight=11,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a2",
+      "y": 180
+    },
+    "facing=west,weight=0,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a0",
+      "y": 270
+    },
+    "facing=west,weight=0,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a0",
+      "y": 270
+    },
+    "facing=west,weight=0,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a1",
+      "y": 270
+    },
+    "facing=west,weight=0,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a1",
+      "y": 270
+    },
+    "facing=west,weight=0,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_40_a2",
+      "y": 270
+    },
+    "facing=west,weight=0,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_40_a2",
+      "y": 270
+    },
+    "facing=west,weight=1,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a0",
+      "y": 270
+    },
+    "facing=west,weight=1,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a0",
+      "y": 270
+    },
+    "facing=west,weight=1,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a1",
+      "y": 270
+    },
+    "facing=west,weight=1,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a1",
+      "y": 270
+    },
+    "facing=west,weight=1,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_50_a2",
+      "y": 270
+    },
+    "facing=west,weight=1,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_50_a2",
+      "y": 270
+    },
+    "facing=west,weight=2,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a0",
+      "y": 270
+    },
+    "facing=west,weight=2,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a0",
+      "y": 270
+    },
+    "facing=west,weight=2,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a1",
+      "y": 270
+    },
+    "facing=west,weight=2,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a1",
+      "y": 270
+    },
+    "facing=west,weight=2,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_60_a2",
+      "y": 270
+    },
+    "facing=west,weight=2,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_60_a2",
+      "y": 270
+    },
+    "facing=west,weight=3,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a0",
+      "y": 270
+    },
+    "facing=west,weight=3,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a0",
+      "y": 270
+    },
+    "facing=west,weight=3,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a1",
+      "y": 270
+    },
+    "facing=west,weight=3,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a1",
+      "y": 270
+    },
+    "facing=west,weight=3,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_70_a2",
+      "y": 270
+    },
+    "facing=west,weight=3,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_70_a2",
+      "y": 270
+    },
+    "facing=west,weight=4,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a0",
+      "y": 270
+    },
+    "facing=west,weight=4,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a0",
+      "y": 270
+    },
+    "facing=west,weight=4,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a1",
+      "y": 270
+    },
+    "facing=west,weight=4,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a1",
+      "y": 270
+    },
+    "facing=west,weight=4,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_80_a2",
+      "y": 270
+    },
+    "facing=west,weight=4,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_80_a2",
+      "y": 270
+    },
+    "facing=west,weight=5,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a0",
+      "y": 270
+    },
+    "facing=west,weight=5,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a0",
+      "y": 270
+    },
+    "facing=west,weight=5,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a1",
+      "y": 270
+    },
+    "facing=west,weight=5,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a1",
+      "y": 270
+    },
+    "facing=west,weight=5,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_90_a2",
+      "y": 270
+    },
+    "facing=west,weight=5,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_90_a2",
+      "y": 270
+    },
+    "facing=west,weight=6,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a0",
+      "y": 270
+    },
+    "facing=west,weight=6,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a0",
+      "y": 270
+    },
+    "facing=west,weight=6,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a1",
+      "y": 270
+    },
+    "facing=west,weight=6,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a1",
+      "y": 270
+    },
+    "facing=west,weight=6,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_100_a2",
+      "y": 270
+    },
+    "facing=west,weight=6,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_100_a2",
+      "y": 270
+    },
+    "facing=west,weight=7,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a0",
+      "y": 270
+    },
+    "facing=west,weight=7,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a0",
+      "y": 270
+    },
+    "facing=west,weight=7,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a1",
+      "y": 270
+    },
+    "facing=west,weight=7,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a1",
+      "y": 270
+    },
+    "facing=west,weight=7,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_120_a2",
+      "y": 270
+    },
+    "facing=west,weight=7,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_120_a2",
+      "y": 270
+    },
+    "facing=west,weight=8,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a0",
+      "y": 270
+    },
+    "facing=west,weight=8,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a0",
+      "y": 270
+    },
+    "facing=west,weight=8,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a1",
+      "y": 270
+    },
+    "facing=west,weight=8,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a1",
+      "y": 270
+    },
+    "facing=west,weight=8,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_140_a2",
+      "y": 270
+    },
+    "facing=west,weight=8,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_140_a2",
+      "y": 270
+    },
+    "facing=west,weight=9,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a0",
+      "y": 270
+    },
+    "facing=west,weight=9,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a0",
+      "y": 270
+    },
+    "facing=west,weight=9,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a1",
+      "y": 270
+    },
+    "facing=west,weight=9,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a1",
+      "y": 270
+    },
+    "facing=west,weight=9,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_160_a2",
+      "y": 270
+    },
+    "facing=west,weight=9,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_160_a2",
+      "y": 270
+    },
+    "facing=west,weight=10,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a0",
+      "y": 270
+    },
+    "facing=west,weight=10,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a0",
+      "y": 270
+    },
+    "facing=west,weight=10,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a1",
+      "y": 270
+    },
+    "facing=west,weight=10,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a1",
+      "y": 270
+    },
+    "facing=west,weight=10,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_180_a2",
+      "y": 270
+    },
+    "facing=west,weight=10,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_180_a2",
+      "y": 270
+    },
+    "facing=west,weight=11,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a0",
+      "y": 270
+    },
+    "facing=west,weight=11,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a0",
+      "y": 270
+    },
+    "facing=west,weight=11,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a1",
+      "y": 270
+    },
+    "facing=west,weight=11,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a1",
+      "y": 270
+    },
+    "facing=west,weight=11,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_200_a2",
+      "y": 270
+    },
+    "facing=west,weight=11,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_200_a2",
+      "y": 270
+    },
+    "facing=north,weight=12,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a0"
+    },
+    "facing=north,weight=12,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a0"
+    },
+    "facing=north,weight=12,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a1"
+    },
+    "facing=north,weight=12,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a1"
+    },
+    "facing=north,weight=12,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a2"
+    },
+    "facing=north,weight=12,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a2"
+    },
+    "facing=east,weight=12,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a0",
+      "y": 90
+    },
+    "facing=east,weight=12,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a0",
+      "y": 90
+    },
+    "facing=east,weight=12,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a1",
+      "y": 90
+    },
+    "facing=east,weight=12,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a1",
+      "y": 90
+    },
+    "facing=east,weight=12,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a2",
+      "y": 90
+    },
+    "facing=east,weight=12,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a2",
+      "y": 90
+    },
+    "facing=south,weight=12,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a0",
+      "y": 180
+    },
+    "facing=south,weight=12,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a0",
+      "y": 180
+    },
+    "facing=south,weight=12,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a1",
+      "y": 180
+    },
+    "facing=south,weight=12,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a1",
+      "y": 180
+    },
+    "facing=south,weight=12,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a2",
+      "y": 180
+    },
+    "facing=south,weight=12,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a2",
+      "y": 180
+    },
+    "facing=west,weight=12,anim=0,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a0",
+      "y": 270
+    },
+    "facing=west,weight=12,anim=0,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a0",
+      "y": 270
+    },
+    "facing=west,weight=12,anim=1,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a1",
+      "y": 270
+    },
+    "facing=west,weight=12,anim=1,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a1",
+      "y": 270
+    },
+    "facing=west,weight=12,anim=2,active=false": {
+      "model": "hardgym:block/bench_press_station_220_a2",
+      "y": 270
+    },
+    "facing=west,weight=12,anim=2,active=true": {
+      "model": "hardgym:block/bench_press_station_220_a2",
+      "y": 270
+    }
+  }
+}
