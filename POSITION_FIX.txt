@@ -1,5 +1,0 @@
-v0.7.18
-- Rack bar position unchanged while on the hooks.
-- Active squat (mounted) bar and plates moved MUCH farther onto the player's back.
-- Shift applied only to mounted squat models: Z -6.0 from original v0.7.16.
-- Changed files: 36, changed elements: 216.
