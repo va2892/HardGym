@@ -1,3 +1,0 @@
-HardGym v0.10.16
-
-Bench press: raised both leg roots by the same -2 model-pixel local Z offset used for the torso, so legs line up with the lifted body.
