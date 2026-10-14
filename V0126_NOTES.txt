@@ -1,6 +1,0 @@
-HardGym v0.10.26
-
-Bench press: small leg-clearance correction.
-- moved leg roots outward by only 0.25 model units (±2.15)
-- increased thigh roll slightly from ±0.34 to ±0.38
-- keeps the same realistic knee bend but prevents the inner thighs from clipping into the bench pad
