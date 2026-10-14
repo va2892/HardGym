@@ -1,8 +1,0 @@
-HardGym v0.10.25
-
-Bench press: rebuilt the leg pose around real hip/knee mechanics instead of widening the leg roots.
-- leg pivots returned to the normal hip sockets (±1.9)
-- outward stance now comes from thigh roll (±0.34)
-- removed the large thigh yaw/twist so the thigh blocks stay flatter
-- kept a small downward hip angle (pitch 0.16)
-- increased optional BendyLib knee bend to 1.45 rad for a more realistic planted-foot position
