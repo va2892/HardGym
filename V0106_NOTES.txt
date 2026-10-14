@@ -1,6 +1,0 @@
-HardGym v0.10.6
-
-Changes:
-1) ACTIVE squat bar/plates moved closer to the player in mounted models.
-2) Mid and bottom squat phases moved closer than the top phase.
-3) Intended side effect: the squat bar should be much less visible from first person.
