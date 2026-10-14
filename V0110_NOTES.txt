@@ -1,6 +1,0 @@
-HardGym v0.10.10
-
-Bench press fix:
-- v0.10.9 shifted the player in the wrong direction.
-- lock position is now 1.04 blocks along the bench facing axis.
-- Goal: move the player farther toward the foot-end of the bench.
