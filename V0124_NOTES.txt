@@ -1,3 +1,0 @@
-HardGym v0.10.24
-
-Bench press: kept pivotX and yaw unchanged, but changed thigh roll from -0.18/+0.18 to +0.18/-0.18 so the thighs rotate in place with the same spread instead of looking like they are being pulled toward the center.
