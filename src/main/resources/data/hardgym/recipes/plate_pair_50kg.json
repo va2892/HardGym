@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "hardgym:plate_pairs",
+  "pattern": [
+    "BIB",
+    "IDI",
+    "BIB"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "D": {
+      "item": "minecraft:black_dye"
+    },
+    "B": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "result": {
+    "item": "hardgym:plate_pair_50kg",
+    "count": 1
+  }
+}

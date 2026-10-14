@@ -1,0 +1,6 @@
+{
+  "parent": "hardgym:block/bench_press_station_90_a2",
+  "textures": {
+    "pad": "hardgym:block/bench_pad_red"
+  }
+}

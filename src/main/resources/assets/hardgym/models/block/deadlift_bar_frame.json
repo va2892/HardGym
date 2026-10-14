@@ -1,0 +1,11 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "hardgym:block/bench_metal",
+    "bar": "hardgym:block/bench_bar",
+    "green": "hardgym:block/plate_green",
+    "yellow": "hardgym:block/plate_yellow",
+    "blue": "hardgym:block/plate_blue"
+  },
+  "elements": []
+}

@@ -1,17 +1,114 @@
 package com.hardgym.mixin;
 
+import com.hardgym.player.BenchPlayerState;
+import com.hardgym.player.StandingPlayerState;
+import com.hardgym.player.DumbbellPlayerState;
+import com.hardgym.item.DumbbellItem;
 import com.hardgym.player.GymPlayerData;
+import com.hardgym.player.GymPhysicalStats;
+import com.hardgym.player.GymPhysiqueClientState;
 import com.hardgym.player.GymStats;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Optional;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin implements GymPlayerData {
+public abstract class PlayerEntityMixin implements GymPlayerData, BenchPlayerState, StandingPlayerState, DumbbellPlayerState {
+    @Unique private static final TrackedData<Optional<BlockPos>> hardgym$benchPos =
+            DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
+    @Unique private static final TrackedData<Optional<BlockPos>> hardgym$squatPos =
+            DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
+    @Unique private static final TrackedData<Optional<BlockPos>> hardgym$deadliftPos =
+            DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
+    @Unique private static final TrackedData<Integer> hardgym$dumbbellTrainingWeight =
+            DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    @Inject(method = "initDataTracker", at = @At("TAIL"))
+    private void hardgym$initExerciseState(CallbackInfo ci) {
+        ((PlayerEntity)(Object)this).getDataTracker().startTracking(hardgym$benchPos, Optional.empty());
+        ((PlayerEntity)(Object)this).getDataTracker().startTracking(hardgym$squatPos, Optional.empty());
+        ((PlayerEntity)(Object)this).getDataTracker().startTracking(hardgym$deadliftPos, Optional.empty());
+        ((PlayerEntity)(Object)this).getDataTracker().startTracking(hardgym$dumbbellTrainingWeight, 0);
+    }
+
+    @Override
+    public int hardgym$getDumbbellTrainingWeight() {
+        return ((PlayerEntity)(Object)this).getDataTracker().get(hardgym$dumbbellTrainingWeight);
+    }
+
+    @Override
+    public void hardgym$setDumbbellTrainingWeight(int weightKg) {
+        ((PlayerEntity)(Object)this).getDataTracker().set(hardgym$dumbbellTrainingWeight, Math.max(0, weightKg));
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void hardgym$clearInterruptedDumbbell(CallbackInfo ci) {
+        PlayerEntity player = (PlayerEntity)(Object)this;
+        // Covers inventory replacement, death and other clearActiveItem paths
+        // that can bypass the item's normal stopUsingItem callback.
+        if (!player.world.isClient && hardgym$getDumbbellTrainingWeight() != 0
+                && (!player.isUsingItem() || !(player.getActiveItem().getItem() instanceof DumbbellItem)
+                || ((DumbbellItem) player.getActiveItem().getItem()).getWeightKg() != hardgym$getDumbbellTrainingWeight())) {
+            hardgym$setDumbbellTrainingWeight(0);
+        }
+    }
+
+    @Override
+    public BlockPos hardgym$getBenchPos() {
+        return ((PlayerEntity)(Object)this).getDataTracker().get(hardgym$benchPos).orElse(null);
+    }
+
+    @Override
+    public void hardgym$setBenchPos(BlockPos pos) {
+        ((PlayerEntity)(Object)this).getDataTracker().set(hardgym$benchPos,
+                pos == null ? Optional.empty() : Optional.of(pos.toImmutable()));
+    }
+
+    @Override
+    public BlockPos hardgym$getSquatPos() {
+        return ((PlayerEntity)(Object)this).getDataTracker().get(hardgym$squatPos).orElse(null);
+    }
+
+    @Override
+    public void hardgym$setSquatPos(BlockPos pos) {
+        ((PlayerEntity)(Object)this).getDataTracker().set(hardgym$squatPos,
+                pos == null ? Optional.empty() : Optional.of(pos.toImmutable()));
+    }
+
+    @Override
+    public BlockPos hardgym$getDeadliftPos() {
+        return ((PlayerEntity)(Object)this).getDataTracker().get(hardgym$deadliftPos).orElse(null);
+    }
+
+    @Override
+    public void hardgym$setDeadliftPos(BlockPos pos) {
+        ((PlayerEntity)(Object)this).getDataTracker().set(hardgym$deadliftPos,
+                pos == null ? Optional.empty() : Optional.of(pos.toImmutable()));
+    }
+
+    @Inject(method = "getBlockBreakingSpeed", at = @At("RETURN"), cancellable = true)
+    private void hardgym$applyBicepsMiningSpeed(BlockState state, CallbackInfoReturnable<Float> cir) {
+        PlayerEntity self = (PlayerEntity)(Object)this;
+        int bicepsLevel = self.world.isClient ? GymPhysiqueClientState.getBicepsLevel()
+                : GymStats.levelForXp(hardgym$bicepsXp);
+        // Scale vanilla's final result, retaining tools, Efficiency, Haste,
+        // Mining Fatigue, underwater/airborne penalties and harvest requirements.
+        cir.setReturnValue(cir.getReturnValue()
+                * GymPhysicalStats.miningSpeedMultiplierForBicepsLevel(bicepsLevel));
+    }
+
     @Unique private int hardgym$strengthXp = 0;
     @Unique private int hardgym$strengthIdleSeconds = 0;
     @Unique private int hardgym$bicepsXp = 0;
@@ -103,6 +200,14 @@ public abstract class PlayerEntityMixin implements GymPlayerData {
         hardgym$deadliftEstimated1Rm = gym.contains("DeadliftEstimated1Rm", 6)
                 ? Math.max(0.0D, gym.getDouble("DeadliftEstimated1Rm"))
                 : com.hardgym.player.StrengthRepTable.migrateOldPr(hardgym$deadliftPr);
+
+        // Discard cached global-Strength floors that are unsupported by this exercise's records.
+        hardgym$benchEstimated1Rm = com.hardgym.player.StrengthRepTable.recordedOneRepMax(
+                hardgym$benchEstimated1Rm, hardgym$benchPressPr, hardgym$benchPressReps);
+        hardgym$squatEstimated1Rm = com.hardgym.player.StrengthRepTable.recordedOneRepMax(
+                hardgym$squatEstimated1Rm, hardgym$squatPr, hardgym$squatReps);
+        hardgym$deadliftEstimated1Rm = com.hardgym.player.StrengthRepTable.recordedOneRepMax(
+                hardgym$deadliftEstimated1Rm, hardgym$deadliftPr, hardgym$deadliftReps);
 
         // v0.9.0 exercise-specific progression. Preserve old worlds by deriving a
         // reasonable starting point from the stats/reps they already earned.

@@ -1,0 +1,12 @@
+HardGym v0.10.4 — squat leg-only ground-contact fix
+
+Changed from v0.10.3:
+- Reverted the v0.10.3 whole-player vertical correction for squat.
+- Reverted the matching mounted bar/plate vertical shift.
+- Only the player legs are raised during squat:
+  ANIM 1 (middle): 3.0 model pixels upward.
+  ANIM 2 (bottom): 4.6 model pixels upward.
+- Torso, head, arms and bar stay at their pre-v0.10.3 height.
+
+Implementation:
+BipedEntityModelMixin sets rightLeg/leftLeg pivotY to 12 - legLiftY.

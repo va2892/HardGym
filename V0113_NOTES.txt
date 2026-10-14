@@ -1,0 +1,3 @@
+HardGym v0.10.13
+
+Bench press: lifted the whole player pose upward by 2 model pixels so the torso sits above the bench instead of clipping into it.

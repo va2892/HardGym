@@ -1,0 +1,3 @@
+HardGym v0.10.19
+
+Bench press: reduced upper-leg pitch further from 0.78 to 0.58 so the thighs are straighter and less folded up at the hip while keeping the wider leg stance.

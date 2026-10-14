@@ -1,0 +1,3 @@
+HardGym v0.10.15
+
+Bench press: reverted to the v0.10.12 base placement and lifted only the upper body away from the bench by moving body/head/arm pivotZ by -2 model pixels.

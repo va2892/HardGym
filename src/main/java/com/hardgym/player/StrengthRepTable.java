@@ -42,22 +42,39 @@ public final class StrengthRepTable {
     }
 
     /**
-     * A complete hard set now builds about 10 FAT instead of ~30.
-     * The 10 points are distributed across the reps, so FAT still rises while the
-     * set is happening, including very high-rep sets where integer FAT cannot be
-     * added every single rep. A completed set reaches exactly 10 FAT from reps.
+     * FAT now reflects BOTH relative set effort and absolute bar weight.
      *
+     * A full working set around 100 kg still gives about 10 FAT, but a stronger
+     * lifter moving more absolute weight accumulates more fatigue even at the same
+     * rep count. Example for equally hard 10-rep sets:
+     * 60 kg ~= 8 FAT, 100 kg ~= 10 FAT, 140 kg ~= 12 FAT, 200 kg ~= 15 FAT.
+     *
+     * The target FAT is distributed across the snapshotted target reps, so doing
+     * only part of a set gives only the corresponding part of that set's fatigue.
+     *
+     * @param weightKg absolute barbell weight
      * @param setTargetReps target reps snapshotted at the start of the set
      * @param completedRepsBefore number of reps already completed before this rep
      */
-    public static int fatigueGainForRep(int setTargetReps, int completedRepsBefore) {
+    public static int fatigueGainForRep(int weightKg, int setTargetReps, int completedRepsBefore) {
         int target = Math.max(1, setTargetReps);
         int beforeReps = Math.max(0, Math.min(target, completedRepsBefore));
         int afterReps = Math.min(target, beforeReps + 1);
 
-        int beforeFat = (beforeReps * 10) / target;
-        int afterFat = (afterReps * 10) / target;
+        int fullSetFatigue = fatigueForFullSet(weightKg);
+        int beforeFat = (beforeReps * fullSetFatigue) / target;
+        int afterFat = (afterReps * fullSetFatigue) / target;
         return Math.max(0, afterFat - beforeFat);
+    }
+
+    /**
+     * Absolute-load component of a completed hard set.
+     * 100 kg stays near the previous balance point of ~10 FAT.
+     * The cap prevents very heavy squat/deadlift sets from instantly filling FAT.
+     */
+    public static int fatigueForFullSet(int weightKg) {
+        int fatigue = (int)Math.round(5.0D + Math.max(0, weightKg) / 20.0D);
+        return Math.max(6, Math.min(20, fatigue));
     }
 
     /**
@@ -90,6 +107,18 @@ public final class StrengthRepTable {
     /** Old PRs did not record reps, so migration treats them as a roughly 5RM set. */
     public static double migrateOldPr(int prKg) {
         return prKg <= 0 ? 0.0D : prKg / 0.85D;
+    }
+
+    /** Keep only an estimate supported by this exercise's own completed repetitions. */
+    public static double recordedOneRepMax(double storedKg, int prKg, int totalExerciseReps) {
+        if (prKg <= 0) return 0.0D;
+        // Legacy PRs without repetition counts retain the old approximate 5RM migration.
+        double upperBound = totalExerciseReps > 0
+                ? estimateOneRepMax(prKg, totalExerciseReps) : migrateOldPr(prKg);
+        double stored = Double.isFinite(storedKg) && storedKg > 0.0D
+                ? storedKg : Math.min(migrateOldPr(prKg), upperBound);
+        // Old versions saved a floor derived from global Strength as if it were a set.
+        return Math.min(stored, upperBound);
     }
 
     public static int roundedKg(double value) {

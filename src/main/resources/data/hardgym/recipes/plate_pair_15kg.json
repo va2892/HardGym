@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "hardgym:plate_pairs",
+  "pattern": [
+    "III",
+    "IDI",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "D": {
+      "item": "minecraft:yellow_dye"
+    }
+  },
+  "result": {
+    "item": "hardgym:plate_pair_15kg",
+    "count": 1
+  }
+}

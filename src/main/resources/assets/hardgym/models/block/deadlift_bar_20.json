@@ -1,0 +1,80 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "hardgym:block/bench_metal",
+    "bar": "hardgym:block/bench_bar",
+    "green": "hardgym:block/plate_green",
+    "yellow": "hardgym:block/plate_yellow",
+    "blue": "hardgym:block/plate_blue"
+  },
+  "elements": [
+    {
+      "from": [
+        -12.0,
+        0.0,
+        7.0
+      ],
+      "to": [
+        28.0,
+        1.0,
+        9.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bar",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#bar",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#bar",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#bar",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#bar",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#bar",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

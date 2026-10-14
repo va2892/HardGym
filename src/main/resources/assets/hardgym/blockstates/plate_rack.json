@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hardgym:block/plate_rack",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "hardgym:block/plate_rack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hardgym:block/plate_rack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hardgym:block/plate_rack",
+      "y": 270
+    }
+  }
+}

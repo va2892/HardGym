@@ -1,9 +1,13 @@
 package com.hardgym.training;
 
-import com.hardgym.HardGymMod;
+import com.hardgym.animation.ExerciseAnimation;
+import com.hardgym.block.entity.BarbellBlockEntity;
 import com.hardgym.block.BenchPressBlock;
+import com.hardgym.player.BenchPlayerState;
 import com.hardgym.player.GymHud;
 import com.hardgym.player.GymPlayerData;
+import com.hardgym.player.BarbellLoad;
+import com.hardgym.player.GymMuscleStrength;
 import com.hardgym.player.GymStats;
 import com.hardgym.player.GymPhysicalStats;
 import com.hardgym.player.StrengthDecay;
@@ -27,7 +31,7 @@ import java.util.UUID;
 
 public final class BenchPressManager {
     private static final Map<UUID, BenchSession> SESSIONS = new HashMap<>();
-    private static final int[] TRAINING_WEIGHTS = new int[]{40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220};
+    private static final int[] TRAINING_WEIGHTS = BarbellLoad.reachableWeights(5);
 
     private BenchPressManager() {
     }
@@ -46,6 +50,7 @@ public final class BenchPressManager {
     public static void clear(UUID uuid) {
         BenchSession session = SESSIONS.remove(uuid);
         if (session != null) {
+            ((BenchPlayerState)session.player).hardgym$setBenchPos(null);
             setBenchAnimation(session.world, session.pos, 0);
             setBenchActive(session.world, session.pos, false);
         }
@@ -61,16 +66,17 @@ public final class BenchPressManager {
         }
 
         GymPlayerData data = (GymPlayerData) player;
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int required = requiredStrength(weightKg);
+        int muscleLevel = GymMuscleStrength.benchLevel(data);
+        int required = requiredLevel(weightKg);
 
-        if (strengthLevel < required) {
-            player.sendMessage(new LiteralText("Слишком тяжело для жима. Нужен Strength " + required + ".")
+        if (muscleLevel < required) {
+            player.sendMessage(new LiteralText("Слишком тяжело для жима. Нужна сила груди и трицепса Lv."
+                    + required + " (среднее Chest/Triceps, сейчас Lv." + muscleLevel + ").")
                     .formatted(Formatting.RED), true);
             return;
         }
 
-        double oneRepMax = effectiveOneRepMax(data, strengthLevel, weightKg);
+        double oneRepMax = effectiveOneRepMax(data);
         int targetReps = StrengthRepTable.targetRepsWithFatigue(weightKg, oneRepMax, data.hardgym$getFatigue());
         int staminaCost = StrengthRepTable.staminaCostForTarget(targetReps);
         if (data.hardgym$getStamina() < staminaCost || data.hardgym$getFatigue() >= 95) {
@@ -84,6 +90,7 @@ public final class BenchPressManager {
         SESSIONS.put(uuid, session);
         setBenchAnimation(session.world, pos, 0);
         setBenchActive(session.world, pos, true);
+        ((BenchPlayerState)player).hardgym$setBenchPos(session.pos);
         lockPlayerToBench(player, session);
         playUnrackSound(session);
 
@@ -97,7 +104,8 @@ public final class BenchPressManager {
             BenchSession session = entry.getValue();
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
 
-            if (player == null || !player.isAlive()) {
+            if (player == null || !player.isAlive() || player != session.player) {
+                ((BenchPlayerState)session.player).hardgym$setBenchPos(null);
                 setBenchAnimation(session.world, session.pos, 0);
                 setBenchActive(session.world, session.pos, false);
                 if (player != null) {
@@ -124,7 +132,7 @@ public final class BenchPressManager {
             }
 
             if (player.getServerWorld() != session.world
-                    || session.world.getBlockState(session.pos).getBlock() != HardGymMod.BENCH_PRESS_STATION) {
+                    || !(session.world.getBlockState(session.pos).getBlock() instanceof BenchPressBlock)) {
                 releasePlayer(player, session);
                 player.sendMessage(new LiteralText("Подход остановлен: скамья недоступна.")
                         .formatted(Formatting.GRAY), true);
@@ -163,6 +171,7 @@ public final class BenchPressManager {
 
             if (session.pinned) {
                 setBenchAnimation(session.world, session.pos, 2);
+                BarbellBlockEntity.setExercisePhase(session.world, session.pos, 2.0F);
                 session.lastAnim = 2;
                 session.damageTicker++;
 
@@ -210,6 +219,9 @@ public final class BenchPressManager {
                     progress = 0;
                 }
             }
+
+            float visualProgress = 100.0F * (1.0F - session.ticksRemaining / (float) Math.max(1, session.ticksPerRep));
+            BarbellBlockEntity.setExercisePhase(session.world, session.pos, ExerciseAnimation.cyclePhase(visualProgress));
 
             session.hudTicker++;
             if (session.hudTicker >= 4) {
@@ -271,6 +283,7 @@ public final class BenchPressManager {
 
         setBenchAnimation(session.world, session.pos, 2);
         session.lastAnim = 2;
+        BarbellBlockEntity.setExercisePhase(session.world, session.pos, 2.0F);
         playDroppedBarSound(session);
 
         player.sendMessage(new LiteralText("ТЕБЯ ПРИДАВИЛО " + session.weightKg + " КГ! +"
@@ -280,7 +293,7 @@ public final class BenchPressManager {
 
     private static void lockPlayerToBench(ServerPlayerEntity player, BenchSession session) {
         BlockState state = session.world.getBlockState(session.pos);
-        if (state.getBlock() != HardGymMod.BENCH_PRESS_STATION) {
+        if (!(state.getBlock() instanceof BenchPressBlock)) {
             return;
         }
 
@@ -291,26 +304,34 @@ public final class BenchPressManager {
         double y = session.pos.getY() + 0.34D;
         double z = session.pos.getZ() + 0.5D;
 
-        x += headDirection.getOffsetX() * 0.80D;
-        z += headDirection.getOffsetZ() * 0.80D;
+        x += headDirection.getOffsetX() * 1.16D;
+        z += headDirection.getOffsetZ() * 1.16D;
 
         player.setVelocity(0.0D, 0.0D, 0.0D);
         player.fallDistance = 0.0F;
-        player.refreshPositionAndAngles(x, y, z, yaw, 0.0F);
-        player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
+        player.setOnGround(true);
+
+        double dx = player.getX() - x;
+        double dy = player.getY() - y;
+        double dz = player.getZ() - z;
+        if (!session.anchored || dx * dx + dy * dy + dz * dz > 1.0E-8D) {
+            // Teleport once on entry, then only after an actual external displacement.
+            // Repeated position/rotation corrections can make the client jitter.
+            player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
+            session.anchored = true;
+        }
         player.setBodyYaw(yaw);
         player.setHeadYaw(yaw);
     }
 
     private static void releasePlayer(ServerPlayerEntity player, BenchSession session) {
+        ((BenchPlayerState)player).hardgym$setBenchPos(null);
         player.setVelocity(0.0D, 0.0D, 0.0D);
-        player.refreshPositionAndAngles(
-                session.startX,
-                session.startY,
-                session.startZ,
-                session.startYaw,
-                session.startPitch
-        );
+        player.fallDistance = 0.0F;
+        player.setOnGround(false);
+        if (player.getServerWorld() != session.world) {
+            return;
+        }
         player.networkHandler.requestTeleport(
                 session.startX,
                 session.startY,
@@ -324,12 +345,12 @@ public final class BenchPressManager {
 
     private static boolean performRep(ServerPlayerEntity player, BenchSession session) {
         GymPlayerData data = (GymPlayerData) player;
-        int required = requiredStrength(session.weightKg);
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
+        int required = requiredLevel(session.weightKg);
+        int muscleLevel = GymMuscleStrength.benchLevel(data);
         int staminaCost = StrengthRepTable.staminaCostForTarget(session.targetReps);
-        int fatigueGain = StrengthRepTable.fatigueGainForRep(session.targetReps, session.reps);
+        int fatigueGain = StrengthRepTable.fatigueGainForRep(session.weightKg, session.targetReps, session.reps);
 
-        if (strengthLevel < required || session.reps >= session.targetReps
+        if (muscleLevel < required || session.reps >= session.targetReps
                 || data.hardgym$getStamina() < staminaCost) {
             return false;
         }
@@ -337,7 +358,7 @@ public final class BenchPressManager {
         int oldStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
         int oldChestLevel = GymStats.levelForXp(data.hardgym$getChestXp());
         int oldTricepsLevel = GymStats.levelForXp(data.hardgym$getTricepsXp());
-        int oldBenchLevel = GymStats.levelForXp(data.hardgym$getBenchXp());
+        int oldBenchLevel = GymMuscleStrength.benchLevel(data);
 
         data.hardgym$setStamina(data.hardgym$getStamina() - staminaCost);
         data.hardgym$setFatigue(data.hardgym$getFatigue() + fatigueGain);
@@ -367,7 +388,7 @@ public final class BenchPressManager {
         int newStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
         int newChestLevel = GymStats.levelForXp(data.hardgym$getChestXp());
         int newTricepsLevel = GymStats.levelForXp(data.hardgym$getTricepsXp());
-        int newBenchLevel = GymStats.levelForXp(data.hardgym$getBenchXp());
+        int newBenchLevel = GymMuscleStrength.benchLevel(data);
 
         if (newStrengthLevel > oldStrengthLevel) {
             player.sendMessage(new LiteralText("HardGym: Strength теперь " + newStrengthLevel + "!")
@@ -390,8 +411,18 @@ public final class BenchPressManager {
         return true;
     }
 
-    private static int requiredStrength(int weightKg) {
-        if (weightKg <= 40) return 2;
+    public static int maxUnlockedWeight(GymPlayerData data) {
+        int level = GymMuscleStrength.benchLevel(data);
+        int max = 0;
+        for (int weight : TRAINING_WEIGHTS) {
+            if (level >= requiredLevel(weight)) max = weight;
+        }
+        return max;
+    }
+
+    public static int requiredLevel(int weightKg) {
+        // Chest and triceps start at level 1, so a beginner must be able to train them here.
+        if (weightKg <= 40) return 1;
         if (weightKg <= 50) return 3;
         if (weightKg <= 60) return 3;
         if (weightKg <= 70) return 4;
@@ -403,22 +434,15 @@ public final class BenchPressManager {
         if (weightKg <= 160) return 14;
         if (weightKg <= 180) return 16;
         if (weightKg <= 200) return 18;
-        return 20;
+        if (weightKg <= 220) return 20;
+        // Keep the old gates, then reach the station's maximum at muscle level 40.
+        int maximumWeightKg = TRAINING_WEIGHTS[TRAINING_WEIGHTS.length - 1];
+        return 20 + (int)Math.ceil((weightKg - 220) * 20.0D / (maximumWeightKg - 220));
     }
 
-    private static double effectiveOneRepMax(GymPlayerData data, int strengthLevel, int selectedWeightKg) {
-        int maxUnlocked = 0;
-        for (int weight : TRAINING_WEIGHTS) {
-            if (strengthLevel >= requiredStrength(weight)) maxUnlocked = weight;
-        }
-        double progressionFloor = maxUnlocked > 0 ? maxUnlocked / 0.85D : selectedWeightKg / 0.85D;
-        double stored = data.hardgym$getBenchEstimated1Rm();
-        if (stored <= 0.0D && data.hardgym$getBenchPressPr() > 0) {
-            stored = StrengthRepTable.migrateOldPr(data.hardgym$getBenchPressPr());
-        }
-        double effective = Math.max(progressionFloor, Math.max(stored, selectedWeightKg));
-        if (effective > data.hardgym$getBenchEstimated1Rm()) data.hardgym$setBenchEstimated1Rm(effective);
-        return effective;
+    private static double effectiveOneRepMax(GymPlayerData data) {
+        // Records describe completed sets; current capacity comes only from the trained muscles.
+        return maxUnlockedWeight(data) / 0.85D;
     }
 
     private static int holdingStaminaDrain(int weightKg, int anim) {
@@ -491,11 +515,11 @@ public final class BenchPressManager {
 
     private static int ticksPerRep(ServerPlayerEntity player, int weightKg) {
         GymPlayerData data = (GymPlayerData) player;
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int required = requiredStrength(weightKg);
-        int extraStrength = Math.max(0, strengthLevel - required);
+        int muscleLevel = GymMuscleStrength.benchLevel(data);
+        int required = requiredLevel(weightKg);
+        int extraTraining = Math.max(0, muscleLevel - required);
         int base = 38 + weightKg / 4;
-        return Math.max(22, base - extraStrength * 3);
+        return Math.max(22, base - extraTraining * 3);
     }
 
     private static void playUnrackSound(BenchSession session) {
@@ -560,7 +584,7 @@ public final class BenchPressManager {
 
     private static void setBenchAnimation(ServerWorld world, BlockPos pos, int anim) {
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() != HardGymMod.BENCH_PRESS_STATION) {
+        if (!(state.getBlock() instanceof BenchPressBlock)) {
             return;
         }
         if (state.get(BenchPressBlock.ANIM) != anim) {
@@ -570,15 +594,17 @@ public final class BenchPressManager {
 
     private static void setBenchActive(ServerWorld world, BlockPos pos, boolean active) {
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() != HardGymMod.BENCH_PRESS_STATION) {
+        if (!(state.getBlock() instanceof BenchPressBlock)) {
             return;
         }
         if (state.get(BenchPressBlock.ACTIVE) != active) {
             world.setBlockState(pos, state.with(BenchPressBlock.ACTIVE, active), 3);
         }
+        BarbellBlockEntity.setExercisePhase(world, pos, 0.0F);
     }
 
     private static final class BenchSession {
+        private final ServerPlayerEntity player;
         private final UUID uuid;
         private final ServerWorld world;
         private final BlockPos pos;
@@ -598,8 +624,10 @@ public final class BenchPressManager {
         private int holdDrainTicker;
         private int damageTicker;
         private int hudTicker;
+        private boolean anchored;
 
         private BenchSession(ServerPlayerEntity player, ServerWorld world, BlockPos pos, int weightKg, int ticksPerRep, int targetReps) {
+            this.player = player;
             this.uuid = player.getUuid();
             this.world = world;
             this.pos = pos.toImmutable();

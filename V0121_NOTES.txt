@@ -1,0 +1,3 @@
+HardGym v0.10.21
+
+Bench press: widened the leg roots a bit more (pivotX 4.6 -> 5.1), reduced upper-leg pitch again (0.36 -> 0.14), and increased outward rotation/roll (yaw 0.58 -> 0.74, roll 0.22 -> 0.30) so the thighs extend straighter from the torso and open farther to the sides.

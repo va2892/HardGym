@@ -1,0 +1,68 @@
+{
+  "variants": {
+    "facing=north,left=false,right=false": {
+      "model": "hardgym:block/dumbbell_rack",
+      "y": 0
+    },
+    "facing=east,left=false,right=false": {
+      "model": "hardgym:block/dumbbell_rack",
+      "y": 90
+    },
+    "facing=south,left=false,right=false": {
+      "model": "hardgym:block/dumbbell_rack",
+      "y": 180
+    },
+    "facing=west,left=false,right=false": {
+      "model": "hardgym:block/dumbbell_rack",
+      "y": 270
+    },
+    "facing=north,left=true,right=false": {
+      "model": "hardgym:block/dumbbell_rack_connected_1",
+      "y": 0
+    },
+    "facing=east,left=true,right=false": {
+      "model": "hardgym:block/dumbbell_rack_connected_1",
+      "y": 90
+    },
+    "facing=south,left=true,right=false": {
+      "model": "hardgym:block/dumbbell_rack_connected_1",
+      "y": 180
+    },
+    "facing=west,left=true,right=false": {
+      "model": "hardgym:block/dumbbell_rack_connected_1",
+      "y": 270
+    },
+    "facing=north,left=false,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_2",
+      "y": 0
+    },
+    "facing=east,left=false,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_2",
+      "y": 90
+    },
+    "facing=south,left=false,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_2",
+      "y": 180
+    },
+    "facing=west,left=false,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_2",
+      "y": 270
+    },
+    "facing=north,left=true,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_3",
+      "y": 0
+    },
+    "facing=east,left=true,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_3",
+      "y": 90
+    },
+    "facing=south,left=true,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_3",
+      "y": 180
+    },
+    "facing=west,left=true,right=true": {
+      "model": "hardgym:block/dumbbell_rack_connected_3",
+      "y": 270
+    }
+  }
+}

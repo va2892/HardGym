@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "hardgym:dumbbell_10kg"
+    },
+    {
+      "item": "hardgym:dumbbell_10kg"
+    }
+  ],
+  "result": {
+    "item": "hardgym:dumbbell_pair_10kg",
+    "count": 1
+  }
+}

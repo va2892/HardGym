@@ -1,0 +1,5 @@
+HardGym v0.10.9
+
+Bench press only:
+- changed the lock position along the bench axis from 0.80 to 0.56 blocks toward the rack facing direction.
+- Effect: the body is shifted toward the foot-end of the bench so the shoulders come out of the bench area.

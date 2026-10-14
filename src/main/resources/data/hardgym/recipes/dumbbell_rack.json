@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "hardgym:equipment_racks",
+  "pattern": [
+    "I I",
+    "BBB",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "result": {
+    "item": "hardgym:dumbbell_rack",
+    "count": 1
+  }
+}

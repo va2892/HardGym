@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hardgym:block/bench_press_station_blue_frame",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "hardgym:block/bench_press_station_blue_frame",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hardgym:block/bench_press_station_blue_frame",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hardgym:block/bench_press_station_blue_frame",
+      "y": 270
+    }
+  }
+}

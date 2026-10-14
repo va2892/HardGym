@@ -1,0 +1,14 @@
+HardGym v0.10.5 — squat upper-body/bar alignment
+
+Changed from v0.10.4:
+- Legs keep exactly the v0.10.4 ground-contact positions.
+- Standing phase (ANIM 0): unchanged.
+- Middle phase (ANIM 1): torso/head/arms raised 3.0 model pixels.
+- Bottom phase (ANIM 2): torso/head/arms raised 4.6 model pixels.
+- Mounted bar and all plates are raised by the exact same amount in ANIM 1/2.
+- No whole-player MatrixStack lift is added; the correction is model-part-only.
+
+Reason:
+v0.10.4 raised the leg roots but left the torso hip anchor at the old height,
+so the lower torso could visibly protrude into the thighs. v0.10.5 aligns the
+upper-body hip anchor with the raised leg roots while leaving the legs fixed.

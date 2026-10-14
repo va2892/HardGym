@@ -1,9 +1,14 @@
 package com.hardgym.training;
 
 import com.hardgym.HardGymMod;
+import com.hardgym.animation.ExerciseAnimation;
+import com.hardgym.block.entity.BarbellBlockEntity;
 import com.hardgym.block.DeadliftBarBlock;
 import com.hardgym.player.GymHud;
 import com.hardgym.player.GymPlayerData;
+import com.hardgym.player.StandingPlayerState;
+import com.hardgym.player.BarbellLoad;
+import com.hardgym.player.GymMuscleStrength;
 import com.hardgym.player.GymStats;
 import com.hardgym.player.GymPhysicalStats;
 import com.hardgym.player.StrengthDecay;
@@ -12,9 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
@@ -22,6 +25,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,7 +35,7 @@ import java.util.UUID;
 public final class DeadliftManager {
     private static final Map<UUID, DeadliftSession> SESSIONS = new HashMap<>();
     private static final double STAND_OFFSET = 0.58D;
-    private static final int[] TRAINING_WEIGHTS = new int[]{40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300};
+    private static final int[] TRAINING_WEIGHTS = BarbellLoad.reachableWeights(9);
 
     private DeadliftManager() { }
 
@@ -47,6 +51,7 @@ public final class DeadliftManager {
     public static void clear(UUID uuid) {
         DeadliftSession session = SESSIONS.remove(uuid);
         if (session != null) {
+            ((StandingPlayerState)session.player).hardgym$setDeadliftPos(null);
             setAnimation(session.world, session.pos, 0);
             setActive(session.world, session.pos, false);
         }
@@ -66,15 +71,16 @@ public final class DeadliftManager {
         }
 
         GymPlayerData data = (GymPlayerData) player;
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int required = requiredStrength(weightKg);
-        if (strengthLevel < required) {
-            player.sendMessage(new LiteralText("Слишком тяжело для становой. Нужен Strength " + required + ".")
+        int muscleLevel = GymMuscleStrength.legsLevel(data);
+        int required = requiredLevel(weightKg);
+        if (muscleLevel < required) {
+            player.sendMessage(new LiteralText("Слишком тяжело для становой. Нужны ноги (Legs) Lv."
+                    + required + " (сейчас Lv." + muscleLevel + ").")
                     .formatted(Formatting.RED), true);
             return;
         }
 
-        double oneRepMax = effectiveOneRepMax(data, strengthLevel, weightKg);
+        double oneRepMax = effectiveOneRepMax(data);
         int targetReps = StrengthRepTable.targetRepsWithFatigue(weightKg, oneRepMax, data.hardgym$getFatigue());
         int staminaCost = StrengthRepTable.staminaCostForTarget(targetReps);
         if (data.hardgym$getStamina() < staminaCost || data.hardgym$getFatigue() >= 95) {
@@ -87,7 +93,7 @@ public final class DeadliftManager {
         SESSIONS.put(uuid, session);
         setAnimation(session.world, pos, 0);
         setActive(session.world, pos, true);
-        broadcastDeadliftState(player.getUuid(), session, true);
+        ((StandingPlayerState)player).hardgym$setDeadliftPos(session.pos);
         lockPlayer(player, session);
         playGripSound(session);
     }
@@ -99,8 +105,8 @@ public final class DeadliftManager {
             DeadliftSession session = entry.getValue();
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
 
-            if (player == null || !player.isAlive()) {
-                broadcastDeadliftState(entry.getKey(), session, false);
+            if (player == null || !player.isAlive() || player != session.player) {
+                ((StandingPlayerState)session.player).hardgym$setDeadliftPos(null);
                 resetBar(session);
                 if (player != null) GymHud.showRecoveryOrHide(player);
                 iterator.remove();
@@ -110,7 +116,6 @@ public final class DeadliftManager {
             if (player.isSneaking()) {
                 playDropSound(session, 0.70F);
                 releasePlayer(player, session);
-                broadcastDeadliftState(player.getUuid(), session, false);
                 resetBar(session);
                 player.sendMessage(new LiteralText("Подход становой закончен: " + session.reps + " повт. × " + session.weightKg + " кг")
                         .formatted(Formatting.GRAY), true);
@@ -122,7 +127,6 @@ public final class DeadliftManager {
             if (player.getServerWorld() != session.world
                     || session.world.getBlockState(session.pos).getBlock() != HardGymMod.DEADLIFT_BAR) {
                 releasePlayer(player, session);
-                broadcastDeadliftState(player.getUuid(), session, false);
                 player.sendMessage(new LiteralText("Подход остановлен: штанга недоступна.")
                         .formatted(Formatting.GRAY), true);
                 resetBar(session);
@@ -194,6 +198,8 @@ public final class DeadliftManager {
                 session.lastAnim = anim;
             }
 
+            BarbellBlockEntity.setExercisePhase(session.world, session.pos, ExerciseAnimation.pullPhase(session.progress));
+
             session.hudTicker++;
             if (session.hudTicker >= 4) {
                 session.hudTicker = 0;
@@ -214,7 +220,6 @@ public final class DeadliftManager {
         if (current != null) {
             playDropSound(current, 0.65F);
             releasePlayer(player, current);
-            broadcastDeadliftState(player.getUuid(), current, false);
             resetBar(current);
             player.sendMessage(new LiteralText("Подход становой закончен: " + current.reps + " повт. × " + current.weightKg + " кг")
                     .formatted(Formatting.GRAY), true);
@@ -226,7 +231,6 @@ public final class DeadliftManager {
         SESSIONS.remove(player.getUuid());
         playDropSound(session, 0.65F);
         releasePlayer(player, session);
-        broadcastDeadliftState(player.getUuid(), session, false);
         resetBar(session);
         player.sendMessage(new LiteralText(message).formatted(Formatting.GRAY), true);
         GymHud.showRecoveryOrHide(player);
@@ -238,26 +242,11 @@ public final class DeadliftManager {
         session.progress = 0.0F;
         playDropSound(session, 1.0F);
         releasePlayer(player, session);
-        broadcastDeadliftState(player.getUuid(), session, false);
         resetBar(session);
         player.sendMessage(new LiteralText("СИЛ НЕ ХВАТИЛО — ШТАНГА УПАЛА НА ПОЛ.")
                 .formatted(Formatting.RED), false);
         GymHud.showRecoveryOrHide(player);
         // Intentionally no HP damage for deadlift failure.
-    }
-
-    private static void broadcastDeadliftState(UUID lifterUuid, DeadliftSession session, boolean active) {
-        if (session == null || session.world == null || session.world.getServer() == null) return;
-
-        for (ServerPlayerEntity receiver : session.world.getServer().getPlayerManager().getPlayerList()) {
-            PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeUuid(lifterUuid);
-            buf.writeBoolean(active);
-            if (active) {
-                buf.writeBlockPos(session.pos);
-            }
-            ServerPlayNetworking.send(receiver, HardGymMod.DEADLIFT_STATE_PACKET, buf);
-        }
     }
 
     private static void resetBar(DeadliftSession session) {
@@ -275,14 +264,27 @@ public final class DeadliftManager {
         double z = session.pos.getZ() + 0.5D - facing.getOffsetZ() * STAND_OFFSET;
         player.setVelocity(0.0D, 0.0D, 0.0D);
         player.fallDistance = 0.0F;
-        player.refreshPositionAndAngles(x, y, z, yaw, 0.0F);
-        player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
+        double dx = player.getX() - x;
+        double dy = player.getY() - y;
+        double dz = player.getZ() - z;
+        player.setPosition(x, y, z);
+        if (!session.anchored) {
+            // Face the bar once on entry. Mouse look stays free during the set.
+            player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
+            session.anchored = true;
+        } else if (dx * dx + dy * dy + dz * dz > 1.0E-8D) {
+            // Correct only position. Relative zero angles preserve even a newer client view.
+            player.networkHandler.requestTeleport(x, y, z, 0.0F, 0.0F,
+                    EnumSet.of(PlayerPositionLookS2CPacket.Flag.Y_ROT, PlayerPositionLookS2CPacket.Flag.X_ROT));
+        }
         player.setBodyYaw(yaw);
         player.setHeadYaw(yaw);
     }
 
     private static void releasePlayer(ServerPlayerEntity player, DeadliftSession session) {
+        ((StandingPlayerState)player).hardgym$setDeadliftPos(null);
         player.setVelocity(0.0D, 0.0D, 0.0D);
+        if (player.getServerWorld() != session.world) return;
         player.refreshPositionAndAngles(session.startX, session.startY, session.startZ, session.startYaw, session.startPitch);
         player.networkHandler.requestTeleport(session.startX, session.startY, session.startZ, session.startYaw, session.startPitch);
         player.setBodyYaw(session.startYaw);
@@ -291,17 +293,17 @@ public final class DeadliftManager {
 
     private static boolean performRep(ServerPlayerEntity player, DeadliftSession session) {
         GymPlayerData data = (GymPlayerData) player;
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
+        int muscleLevel = GymMuscleStrength.legsLevel(data);
         int staminaCost = StrengthRepTable.staminaCostForTarget(session.targetReps);
-        if (strengthLevel < requiredStrength(session.weightKg) || session.reps >= session.targetReps
+        if (muscleLevel < requiredLevel(session.weightKg) || session.reps >= session.targetReps
                 || data.hardgym$getStamina() < staminaCost) return false;
 
-        int oldStrengthLevel = strengthLevel;
+        int oldStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
         int oldLegsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
         int oldDeadliftLevel = GymStats.levelForXp(data.hardgym$getDeadliftXp());
 
         data.hardgym$setStamina(data.hardgym$getStamina() - staminaCost);
-        data.hardgym$setFatigue(data.hardgym$getFatigue() + StrengthRepTable.fatigueGainForRep(session.targetReps, session.reps));
+        data.hardgym$setFatigue(data.hardgym$getFatigue() + StrengthRepTable.fatigueGainForRep(session.weightKg, session.targetReps, session.reps));
         data.hardgym$setStrengthXp(data.hardgym$getStrengthXp() + strengthXp(session.weightKg));
         data.hardgym$setLegsXp(data.hardgym$getLegsXp() + legsXp(session.weightKg));
         data.hardgym$setDeadliftXp(data.hardgym$getDeadliftXp() + strengthXp(session.weightKg));
@@ -340,7 +342,16 @@ public final class DeadliftManager {
         return true;
     }
 
-    public static int requiredStrength(int weightKg) {
+    public static int maxUnlockedWeight(GymPlayerData data) {
+        int level = GymMuscleStrength.legsLevel(data);
+        int max = 0;
+        for (int weight : TRAINING_WEIGHTS) {
+            if (level >= requiredLevel(weight)) max = weight;
+        }
+        return max;
+    }
+
+    public static int requiredLevel(int weightKg) {
         if (weightKg <= 50) return 1;
         if (weightKg <= 70) return 2;
         if (weightKg <= 90) return 3;
@@ -354,7 +365,10 @@ public final class DeadliftManager {
         if (weightKg <= 240) return 18;
         if (weightKg <= 260) return 20;
         if (weightKg <= 280) return 22;
-        return 24;
+        if (weightKg <= 300) return 24;
+        // Keep the old gates, then reach the station's maximum at muscle level 40.
+        int maximumWeightKg = TRAINING_WEIGHTS[TRAINING_WEIGHTS.length - 1];
+        return 24 + (int)Math.ceil((weightKg - 300) * 16.0D / (maximumWeightKg - 300));
     }
 
     private static int holdingStaminaDrain(int weightKg, int phase) {
@@ -371,19 +385,8 @@ public final class DeadliftManager {
         return base;
     }
 
-    private static double effectiveOneRepMax(GymPlayerData data, int strengthLevel, int selectedWeightKg) {
-        int maxUnlocked = 0;
-        for (int weight : TRAINING_WEIGHTS) {
-            if (strengthLevel >= requiredStrength(weight)) maxUnlocked = weight;
-        }
-        double progressionFloor = maxUnlocked > 0 ? maxUnlocked / 0.85D : selectedWeightKg / 0.85D;
-        double stored = data.hardgym$getDeadliftEstimated1Rm();
-        if (stored <= 0.0D && data.hardgym$getDeadliftPr() > 0) {
-            stored = StrengthRepTable.migrateOldPr(data.hardgym$getDeadliftPr());
-        }
-        double effective = Math.max(progressionFloor, Math.max(stored, selectedWeightKg));
-        if (effective > data.hardgym$getDeadliftEstimated1Rm()) data.hardgym$setDeadliftEstimated1Rm(effective);
-        return effective;
+    private static double effectiveOneRepMax(GymPlayerData data) {
+        return maxUnlockedWeight(data) / 0.85D;
     }
     private static float repHungerExhaustion(int weightKg) { return 1.60F + weightKg / 70.0F; }
     private static int strengthXp(int weightKg) { return Math.max(14, weightKg / 2); }
@@ -391,10 +394,9 @@ public final class DeadliftManager {
 
     private static float pullSpeedPerTick(ServerPlayerEntity player, int weightKg) {
         GymPlayerData data = (GymPlayerData) player;
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int legsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
-        int required = requiredStrength(weightKg);
-        int extra = Math.max(0, strengthLevel - required) + Math.max(0, legsLevel - 1) / 2;
+        int muscleLevel = GymMuscleStrength.legsLevel(data);
+        int required = requiredLevel(weightKg);
+        int extra = Math.max(0, muscleLevel - required) + Math.max(0, muscleLevel - 1) / 2;
         int ticks = Math.max(34, 62 + weightKg / 4 - extra * 2);
         return 100.0F / ticks;
     }
@@ -454,9 +456,11 @@ public final class DeadliftManager {
         if (state.get(DeadliftBarBlock.ACTIVE) != active) {
             world.setBlockState(pos, state.with(DeadliftBarBlock.ACTIVE, active), 3);
         }
+        BarbellBlockEntity.setExercisePhase(world, pos, 0.0F);
     }
 
     private static final class DeadliftSession {
+        private final ServerPlayerEntity player;
         private final ServerWorld world;
         private final BlockPos pos;
         private final int weightKg;
@@ -468,10 +472,12 @@ public final class DeadliftManager {
         private int lastAnim;
         private boolean pressing;
         private boolean returning;
+        private boolean anchored;
         private int staminaDrainTicker;
         private int hudTicker;
 
         private DeadliftSession(ServerPlayerEntity player, ServerWorld world, BlockPos pos, int weightKg, int targetReps) {
+            this.player = player;
             this.world = world;
             this.pos = pos.toImmutable();
             this.weightKg = weightKg;

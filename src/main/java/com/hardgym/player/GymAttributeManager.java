@@ -17,7 +17,7 @@ public final class GymAttributeManager {
     public static void update(ServerPlayerEntity player) {
         GymPlayerData data = (GymPlayerData) player;
         int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int benchLevel = GymStats.levelForXp(data.hardgym$getBenchXp());
+        int benchLevel = GymMuscleStrength.benchLevel(data);
         int squatLevel = GymStats.levelForXp(data.hardgym$getSquatXp());
 
         // Attribute base values for vanilla players are 1.0 damage, 0.10 speed, 20 health.

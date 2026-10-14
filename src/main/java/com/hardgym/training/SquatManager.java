@@ -1,15 +1,21 @@
 package com.hardgym.training;
 
 import com.hardgym.HardGymMod;
+import com.hardgym.animation.ExerciseAnimation;
+import com.hardgym.block.entity.BarbellBlockEntity;
 import com.hardgym.block.SquatRackBlock;
 import com.hardgym.player.GymHud;
 import com.hardgym.player.GymPlayerData;
+import com.hardgym.player.StandingPlayerState;
+import com.hardgym.player.BarbellLoad;
+import com.hardgym.player.GymMuscleStrength;
 import com.hardgym.player.GymStats;
 import com.hardgym.player.GymPhysicalStats;
 import com.hardgym.player.StrengthDecay;
 import com.hardgym.player.StrengthRepTable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -20,6 +26,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,7 +34,7 @@ import java.util.UUID;
 
 public final class SquatManager {
     private static final Map<UUID, SquatSession> SESSIONS = new HashMap<>();
-    private static final int[] TRAINING_WEIGHTS = new int[]{40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300};
+    private static final int[] TRAINING_WEIGHTS = BarbellLoad.reachableWeights(7);
 
     private SquatManager() {
     }
@@ -46,6 +53,7 @@ public final class SquatManager {
     public static void clear(UUID uuid) {
         SquatSession session = SESSIONS.remove(uuid);
         if (session != null) {
+            ((StandingPlayerState)session.player).hardgym$setSquatPos(null);
             setAnimation(session.world, session.pos, 0);
             setActive(session.world, session.pos, false);
         }
@@ -66,16 +74,17 @@ public final class SquatManager {
         }
 
         GymPlayerData data = (GymPlayerData) player;
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int required = requiredStrength(weightKg);
+        int muscleLevel = GymMuscleStrength.legsLevel(data);
+        int required = requiredLevel(weightKg);
 
-        if (strengthLevel < required) {
-            player.sendMessage(new LiteralText("Слишком тяжело для приседа. Нужен Strength " + required + ".")
+        if (muscleLevel < required) {
+            player.sendMessage(new LiteralText("Слишком тяжело для приседа. Нужны ноги (Legs) Lv."
+                    + required + " (сейчас Lv." + muscleLevel + ").")
                     .formatted(Formatting.RED), true);
             return;
         }
 
-        double oneRepMax = effectiveOneRepMax(data, strengthLevel, weightKg);
+        double oneRepMax = effectiveOneRepMax(data);
         int targetReps = StrengthRepTable.targetRepsWithFatigue(weightKg, oneRepMax, data.hardgym$getFatigue());
         int staminaCost = StrengthRepTable.staminaCostForTarget(targetReps);
         if (data.hardgym$getStamina() < staminaCost || data.hardgym$getFatigue() >= 95) {
@@ -89,6 +98,7 @@ public final class SquatManager {
         SESSIONS.put(uuid, session);
         setAnimation(session.world, pos, 0);
         setActive(session.world, pos, true);
+        ((StandingPlayerState)player).hardgym$setSquatPos(session.pos);
         lockPlayer(player, session);
         playUnrackSound(session);
     }
@@ -101,7 +111,8 @@ public final class SquatManager {
             SquatSession session = entry.getValue();
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
 
-            if (player == null || !player.isAlive()) {
+            if (player == null || !player.isAlive() || player != session.player) {
+                ((StandingPlayerState)session.player).hardgym$setSquatPos(null);
                 setAnimation(session.world, session.pos, 0);
                 setActive(session.world, session.pos, false);
                 if (player != null) {
@@ -166,6 +177,7 @@ public final class SquatManager {
 
             if (session.pinned) {
                 setAnimation(session.world, session.pos, 2);
+                BarbellBlockEntity.setExercisePhase(session.world, session.pos, 2.0F);
                 session.lastAnim = 2;
                 session.damageTicker++;
 
@@ -212,6 +224,9 @@ public final class SquatManager {
                     progress = 0;
                 }
             }
+
+            float visualProgress = 100.0F * (1.0F - session.ticksRemaining / (float) Math.max(1, session.ticksPerRep));
+            BarbellBlockEntity.setExercisePhase(session.world, session.pos, ExerciseAnimation.cyclePhase(visualProgress));
 
             session.hudTicker++;
             if (session.hudTicker >= 4) {
@@ -262,6 +277,7 @@ public final class SquatManager {
 
         setAnimation(session.world, session.pos, 2);
         session.lastAnim = 2;
+        BarbellBlockEntity.setExercisePhase(session.world, session.pos, 2.0F);
         playDroppedBarSound(session);
         player.sendMessage(new LiteralText("НЕ МОЖЕШЬ ВСТАТЬ С " + session.weightKg + " КГ! +"
                 + instantFatigue + "% FAT. Shift — сбросить штангу.")
@@ -281,14 +297,27 @@ public final class SquatManager {
 
         player.setVelocity(0.0D, 0.0D, 0.0D);
         player.fallDistance = 0.0F;
-        player.refreshPositionAndAngles(x, y, z, yaw, 0.0F);
-        player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
+        double dx = player.getX() - x;
+        double dy = player.getY() - y;
+        double dz = player.getZ() - z;
+        player.setPosition(x, y, z);
+        if (!session.anchored) {
+            // Face the rack once on entry. Mouse look stays free during the set.
+            player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
+            session.anchored = true;
+        } else if (dx * dx + dy * dy + dz * dz > 1.0E-8D) {
+            // Correct only position. Relative zero angles preserve even a newer client view.
+            player.networkHandler.requestTeleport(x, y, z, 0.0F, 0.0F,
+                    EnumSet.of(PlayerPositionLookS2CPacket.Flag.Y_ROT, PlayerPositionLookS2CPacket.Flag.X_ROT));
+        }
         player.setBodyYaw(yaw);
         player.setHeadYaw(yaw);
     }
 
     private static void releasePlayer(ServerPlayerEntity player, SquatSession session) {
+        ((StandingPlayerState)player).hardgym$setSquatPos(null);
         player.setVelocity(0.0D, 0.0D, 0.0D);
+        if (player.getServerWorld() != session.world) return;
         player.refreshPositionAndAngles(session.startX, session.startY, session.startZ, session.startYaw, session.startPitch);
         player.networkHandler.requestTeleport(session.startX, session.startY, session.startZ, session.startYaw, session.startPitch);
         player.setBodyYaw(session.startYaw);
@@ -297,12 +326,12 @@ public final class SquatManager {
 
     private static boolean performRep(ServerPlayerEntity player, SquatSession session) {
         GymPlayerData data = (GymPlayerData) player;
-        int required = requiredStrength(session.weightKg);
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
+        int required = requiredLevel(session.weightKg);
+        int muscleLevel = GymMuscleStrength.legsLevel(data);
         int staminaCost = StrengthRepTable.staminaCostForTarget(session.targetReps);
-        int fatigueGain = StrengthRepTable.fatigueGainForRep(session.targetReps, session.reps);
+        int fatigueGain = StrengthRepTable.fatigueGainForRep(session.weightKg, session.targetReps, session.reps);
 
-        if (strengthLevel < required || session.reps >= session.targetReps
+        if (muscleLevel < required || session.reps >= session.targetReps
                 || data.hardgym$getStamina() < staminaCost) return false;
 
         int oldStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
@@ -351,7 +380,16 @@ public final class SquatManager {
         return true;
     }
 
-    public static int requiredStrength(int weightKg) {
+    public static int maxUnlockedWeight(GymPlayerData data) {
+        int level = GymMuscleStrength.legsLevel(data);
+        int max = 0;
+        for (int weight : TRAINING_WEIGHTS) {
+            if (level >= requiredLevel(weight)) max = weight;
+        }
+        return max;
+    }
+
+    public static int requiredLevel(int weightKg) {
         if (weightKg <= 50) return 1;
         if (weightKg <= 70) return 2;
         if (weightKg <= 90) return 3;
@@ -365,22 +403,14 @@ public final class SquatManager {
         if (weightKg <= 240) return 20;
         if (weightKg <= 260) return 22;
         if (weightKg <= 280) return 24;
-        return 26;
+        if (weightKg <= 300) return 26;
+        // Keep the old gates, then reach the station's maximum at muscle level 40.
+        int maximumWeightKg = TRAINING_WEIGHTS[TRAINING_WEIGHTS.length - 1];
+        return 26 + (int)Math.ceil((weightKg - 300) * 14.0D / (maximumWeightKg - 300));
     }
 
-    private static double effectiveOneRepMax(GymPlayerData data, int strengthLevel, int selectedWeightKg) {
-        int maxUnlocked = 0;
-        for (int weight : TRAINING_WEIGHTS) {
-            if (strengthLevel >= requiredStrength(weight)) maxUnlocked = weight;
-        }
-        double progressionFloor = maxUnlocked > 0 ? maxUnlocked / 0.85D : selectedWeightKg / 0.85D;
-        double stored = data.hardgym$getSquatEstimated1Rm();
-        if (stored <= 0.0D && data.hardgym$getSquatPr() > 0) {
-            stored = StrengthRepTable.migrateOldPr(data.hardgym$getSquatPr());
-        }
-        double effective = Math.max(progressionFloor, Math.max(stored, selectedWeightKg));
-        if (effective > data.hardgym$getSquatEstimated1Rm()) data.hardgym$setSquatEstimated1Rm(effective);
-        return effective;
+    private static double effectiveOneRepMax(GymPlayerData data) {
+        return maxUnlockedWeight(data) / 0.85D;
     }
 
     private static int holdingStaminaDrain(int weightKg, int anim) {
@@ -423,13 +453,12 @@ public final class SquatManager {
 
     private static int ticksPerRep(ServerPlayerEntity player, int weightKg) {
         GymPlayerData data = (GymPlayerData) player;
-        int strengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int legsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
-        int required = requiredStrength(weightKg);
-        int extraStrength = Math.max(0, strengthLevel - required);
-        int extraLegs = Math.max(0, legsLevel - 1);
+        int muscleLevel = GymMuscleStrength.legsLevel(data);
+        int required = requiredLevel(weightKg);
+        int extraTraining = Math.max(0, muscleLevel - required);
+        int extraPractice = Math.max(0, muscleLevel - 1);
         int base = 44 + weightKg / 4;
-        return Math.max(24, base - extraStrength * 2 - extraLegs);
+        return Math.max(24, base - extraTraining * 2 - extraPractice);
     }
 
     private static void playUnrackSound(SquatSession session) {
@@ -486,9 +515,11 @@ public final class SquatManager {
         if (state.get(SquatRackBlock.ACTIVE) != active) {
             world.setBlockState(pos, state.with(SquatRackBlock.ACTIVE, active), 3);
         }
+        BarbellBlockEntity.setExercisePhase(world, pos, 0.0F);
     }
 
     private static final class SquatSession {
+        private final ServerPlayerEntity player;
         private final UUID uuid;
         private final ServerWorld world;
         private final BlockPos pos;
@@ -498,9 +529,11 @@ public final class SquatManager {
         private int ticksPerRep, ticksRemaining, reps, lastAnim;
         private final int targetReps;
         private boolean pressing, pinned;
+        private boolean anchored;
         private int holdDrainTicker, damageTicker, hudTicker;
 
         private SquatSession(ServerPlayerEntity player, ServerWorld world, BlockPos pos, int weightKg, int ticksPerRep, int targetReps) {
+            this.player = player;
             this.uuid = player.getUuid();
             this.world = world;
             this.pos = pos.toImmutable();

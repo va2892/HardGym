@@ -1,0 +1,3 @@
+HardGym v0.10.22
+
+Bench press: preserved the leg spread, but reduced thigh roll from 0.30 to 0.02 so the thighs are no longer visibly twisted and their lower face is closer to parallel with the ground.

@@ -1,11 +1,14 @@
 package com.hardgym.mixin.client;
 
+import com.hardgym.animation.ExerciseAnimation;
 import com.hardgym.block.BenchPressBlock;
 import com.hardgym.block.DeadliftBarBlock;
 import com.hardgym.block.SquatRackBlock;
 import com.hardgym.client.BenchClientState;
 import com.hardgym.client.DeadliftClientState;
+import com.hardgym.client.ExerciseClientState;
 import com.hardgym.client.SquatClientState;
+import com.hardgym.client.StandingBarbellPose;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -49,13 +52,13 @@ public abstract class CameraMixin {
         DeadliftClientState.DeadliftMatch deadlift = DeadliftClientState.findActiveDeadlift(entity);
         if (deadlift != null) {
             Direction facing = DeadliftBarBlock.getFacing(deadlift.state);
-            int anim = deadlift.state.get(DeadliftBarBlock.ANIM);
+            float anim = ExerciseClientState.phase(entity.world, deadlift.pos, deadlift.state, tickDelta);
             double standOffset = 0.58D;
-            double drop = anim == 0 ? 0.12D : (anim == 1 ? 0.06D : 0.0D);
+            double drop = ExerciseAnimation.pose(anim, 0.12F, 0.06F, 0.0F);
             double camX = deadlift.pos.getX() + 0.5D - facing.getOffsetX() * standOffset;
             double camY = deadlift.pos.getY() + 1.62D - drop;
             double camZ = deadlift.pos.getZ() + 0.5D - facing.getOffsetZ() * standOffset;
-            float pitch = anim == 0 ? 24.0F : (anim == 1 ? 12.0F : 0.0F);
+            float pitch = ExerciseAnimation.pose(anim, 24.0F, 12.0F, 0.0F);
             this.setPos(camX, camY, camZ);
             this.setRotation(facing.asRotation(), pitch);
             return;
@@ -64,13 +67,18 @@ public abstract class CameraMixin {
         SquatClientState.SquatMatch squat = SquatClientState.findActiveSquat(entity);
         if (squat == null) return;
         Direction facing = SquatRackBlock.getFacing(squat.state);
-        int anim = squat.state.get(SquatRackBlock.ANIM);
-        double drop = anim == 2 ? 0.50D : (anim == 1 ? 0.25D : 0.0D);
+        float anim = ExerciseClientState.phase(entity.world, squat.pos, squat.state, tickDelta);
+        double drop = ExerciseAnimation.pose(anim, 0.0F, 0.25F, 0.50F);
         double standOffset = 0.34D;
-        double camX = squat.pos.getX() + 0.5D + facing.getOffsetX() * (standOffset + 0.08D);
+        // Stay in front of the grip as the upper body moves during the squat.
+        // This keeps the bar behind the first-person camera even in the bottom pose.
+        double firstPersonCameraOffset = standOffset - 0.20D
+                + StandingBarbellPose.PLAYER_SCALE * (StandingBarbellPose.squatUpperBodyZ(anim)
+                - StandingBarbellPose.squatUpperBodyZ(0.0F)) / 16.0D;
+        double camX = squat.pos.getX() + 0.5D + facing.getOffsetX() * firstPersonCameraOffset;
         double camY = squat.pos.getY() + 1.62D - drop;
-        double camZ = squat.pos.getZ() + 0.5D + facing.getOffsetZ() * (standOffset + 0.08D);
-        float pitch = anim == 2 ? 8.0F : (anim == 1 ? 4.0F : 0.0F);
+        double camZ = squat.pos.getZ() + 0.5D + facing.getOffsetZ() * firstPersonCameraOffset;
+        float pitch = ExerciseAnimation.pose(anim, 0.0F, 4.0F, 8.0F);
         this.setPos(camX, camY, camZ);
         this.setRotation(facing.asRotation() + 180.0F, pitch);
     }

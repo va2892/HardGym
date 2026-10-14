@@ -1,0 +1,3 @@
+HardGym v0.10.20
+
+Bench press: reduced upper-leg pitch again from 0.58 to 0.36 so the thighs extend straighter from the torso and sit closer to the sketched target pose in side and front views.

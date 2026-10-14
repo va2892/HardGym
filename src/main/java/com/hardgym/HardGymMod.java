@@ -2,10 +2,17 @@ package com.hardgym;
 
 import com.hardgym.block.BenchPressBlock;
 import com.hardgym.block.DeadliftBarBlock;
+import com.hardgym.block.EquipmentRackBlock;
 import com.hardgym.block.SquatRackBlock;
 import com.hardgym.item.DumbbellItem;
+import com.hardgym.item.DumbbellPairItem;
+import com.hardgym.item.PlatePairItem;
+import com.hardgym.block.entity.BarbellBlockEntity;
+import com.hardgym.block.entity.EquipmentRackBlockEntity;
+import com.hardgym.player.BenchPlayerState;
 import com.hardgym.player.GymHud;
 import com.hardgym.player.GymPlayerData;
+import com.hardgym.player.GymMuscleStrength;
 import com.hardgym.player.GymStats;
 import com.hardgym.player.GymAttributeManager;
 import com.hardgym.player.GymPhysicalStats;
@@ -23,19 +30,22 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Locale;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -47,16 +57,30 @@ public class HardGymMod implements ModInitializer {
     public static final Identifier BENCH_INPUT_PACKET = new Identifier(MOD_ID, "bench_press_input");
     public static final Identifier SQUAT_INPUT_PACKET = new Identifier(MOD_ID, "squat_input");
     public static final Identifier DEADLIFT_INPUT_PACKET = new Identifier(MOD_ID, "deadlift_input");
-    public static final Identifier DEADLIFT_STATE_PACKET = new Identifier(MOD_ID, "deadlift_state");
     public static final Identifier GYM_HUD_PACKET = new Identifier(MOD_ID, "gym_hud");
     public static final Identifier PHYSIQUE_SYNC_PACKET = new Identifier(MOD_ID, "physique_sync");
 
-    public static final Item DUMBBELL_5KG = new DumbbellItem(5, 1, 4, 6, 5, 3, 16,
-            new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final Item DUMBBELL_10KG = new DumbbellItem(10, 2, 8, 10, 8, 5, 20,
-            new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final Item DUMBBELL_20KG = new DumbbellItem(20, 5, 16, 18, 14, 9, 28,
-            new Item.Settings().group(ItemGroup.MISC).maxCount(1));
+    public static final DumbbellPairItem[] DUMBBELL_PAIRS = createDumbbellPairs();
+
+    private static DumbbellPairItem[] createDumbbellPairs() {
+        DumbbellPairItem[] pairs = new DumbbellPairItem[12];
+        for (int index = 0; index < pairs.length; index++) {
+            pairs[index] = new DumbbellPairItem((index + 1) * 10,
+                    new Item.Settings().group(ItemGroup.MISC).maxCount(1));
+        }
+        return pairs;
+    }
+
+    public static final Item PLATE_PAIR_10KG = new PlatePairItem(10,
+            new Item.Settings().group(ItemGroup.MISC));
+    public static final Item PLATE_PAIR_15KG = new PlatePairItem(15,
+            new Item.Settings().group(ItemGroup.MISC));
+    public static final Item PLATE_PAIR_20KG = new PlatePairItem(20,
+            new Item.Settings().group(ItemGroup.MISC));
+    public static final Item PLATE_PAIR_25KG = new PlatePairItem(25,
+            new Item.Settings().group(ItemGroup.MISC));
+    public static final Item PLATE_PAIR_50KG = new PlatePairItem(50,
+            new Item.Settings().group(ItemGroup.MISC));
 
     public static final Block BENCH_PRESS_STATION = new BenchPressBlock(
             AbstractBlock.Settings.of(Material.METAL).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque());
@@ -64,6 +88,13 @@ public class HardGymMod implements ModInitializer {
             AbstractBlock.Settings.of(Material.METAL).strength(3.5F, 7.0F).sounds(BlockSoundGroup.METAL).nonOpaque());
     public static final Block DEADLIFT_BAR = new DeadliftBarBlock(
             AbstractBlock.Settings.of(Material.METAL).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque());
+    public static final Block DUMBBELL_RACK = new EquipmentRackBlock(
+            AbstractBlock.Settings.of(Material.METAL).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque(), false);
+    public static final Block PLATE_RACK = new EquipmentRackBlock(
+            AbstractBlock.Settings.of(Material.METAL).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque(), true);
+
+    public static BlockEntityType<BarbellBlockEntity> BARBELL_BLOCK_ENTITY;
+    public static BlockEntityType<EquipmentRackBlockEntity> EQUIPMENT_RACK_BLOCK_ENTITY;
 
     private int recoveryTicker = 0;
     private int fatigueRecoverySeconds = 0;
@@ -74,12 +105,15 @@ public class HardGymMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "dumbbell_5kg"), DUMBBELL_5KG);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "dumbbell_10kg"), DUMBBELL_10KG);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "dumbbell_20kg"), DUMBBELL_20KG);
-        Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "bench_press_station"), BENCH_PRESS_STATION);
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bench_press_station"),
-                new BlockItem(BENCH_PRESS_STATION, new Item.Settings().group(ItemGroup.DECORATIONS)));
+        for (DumbbellPairItem pair : DUMBBELL_PAIRS) {
+            Registry.register(Registry.ITEM, new Identifier(MOD_ID, "dumbbell_pair_" + pair.getWeightKg() + "kg"), pair);
+        }
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plate_pair_10kg"), PLATE_PAIR_10KG);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plate_pair_15kg"), PLATE_PAIR_15KG);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plate_pair_20kg"), PLATE_PAIR_20KG);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plate_pair_25kg"), PLATE_PAIR_25KG);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plate_pair_50kg"), PLATE_PAIR_50KG);
+        List<Block> barbellBlocks = registerColoredBenches();
         Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "squat_rack"), SQUAT_RACK);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "squat_rack"),
                 new BlockItem(SQUAT_RACK, new Item.Settings().group(ItemGroup.DECORATIONS)));
@@ -87,10 +121,41 @@ public class HardGymMod implements ModInitializer {
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "deadlift_bar"),
                 new BlockItem(DEADLIFT_BAR, new Item.Settings().group(ItemGroup.DECORATIONS)));
 
+        barbellBlocks.add(SQUAT_RACK);
+        barbellBlocks.add(DEADLIFT_BAR);
+        BARBELL_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "barbell"),
+                BlockEntityType.Builder.create(BarbellBlockEntity::new, barbellBlocks.toArray(new Block[0])).build(null));
+
+        Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "dumbbell_rack"), DUMBBELL_RACK);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "dumbbell_rack"),
+                new BlockItem(DUMBBELL_RACK, new Item.Settings().group(ItemGroup.DECORATIONS)));
+        Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "plate_rack"), PLATE_RACK);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "plate_rack"),
+                new BlockItem(PLATE_RACK, new Item.Settings().group(ItemGroup.DECORATIONS)));
+        EQUIPMENT_RACK_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "equipment_rack"),
+                BlockEntityType.Builder.create(EquipmentRackBlockEntity::new, DUMBBELL_RACK, PLATE_RACK).build(null));
+
         registerCommands();
         registerInputNetworking();
         registerServerTick();
         registerRespawnCopy();
+    }
+
+    private static List<Block> registerColoredBenches() {
+        List<Block> blocks = new ArrayList<>();
+        for (DyeColor color : DyeColor.values()) {
+            // Keep the original ID and block instance for black benches in existing worlds.
+            boolean black = color == DyeColor.BLACK;
+            String name = black ? "bench_press_station" : color.getName() + "_bench_press_station";
+            Block bench = black ? BENCH_PRESS_STATION : new BenchPressBlock(
+                    AbstractBlock.Settings.of(Material.METAL).strength(3.0F, 6.0F)
+                            .sounds(BlockSoundGroup.METAL).nonOpaque());
+            Registry.register(Registry.BLOCK, new Identifier(MOD_ID, name), bench);
+            blocks.add(bench);
+            Registry.register(Registry.ITEM, new Identifier(MOD_ID, name),
+                    new BlockItem(bench, new Item.Settings().group(ItemGroup.DECORATIONS)));
+        }
+        return blocks;
     }
 
     private void registerCommands() {
@@ -103,7 +168,7 @@ public class HardGymMod implements ModInitializer {
                 int chestLevel = GymStats.levelForXp(data.hardgym$getChestXp());
                 int tricepsLevel = GymStats.levelForXp(data.hardgym$getTricepsXp());
                 int legsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
-                int benchLevel = GymStats.levelForXp(data.hardgym$getBenchXp());
+                int benchLevel = GymMuscleStrength.benchLevel(data);
                 int squatLevel = GymStats.levelForXp(data.hardgym$getSquatXp());
                 int deadliftLevel = GymStats.levelForXp(data.hardgym$getDeadliftXp());
 
@@ -120,11 +185,17 @@ public class HardGymMod implements ModInitializer {
                         + GymPhysicalStats.runSpeedPercent(squatLevel) + "% от ванильной").formatted(Formatting.GREEN), false);
                 player.sendMessage(new LiteralText("Становая Lv." + deadliftLevel + " -> высота прыжка: ~"
                         + GymPhysicalStats.jumpHeightPercent(deadliftLevel) + "% от ванильной").formatted(Formatting.AQUA), false);
+                player.sendMessage(new LiteralText("Гантели / Biceps Lv." + bicepsLevel + " -> скорость копания: "
+                        + GymPhysicalStats.miningSpeedPercent(bicepsLevel) + "% от ванильной")
+                        .formatted(Formatting.AQUA), false);
                 player.sendMessage(new LiteralText(StrengthDecay.statusText(data)).formatted(Formatting.DARK_GRAY), false);
                 player.sendMessage(new LiteralText("Biceps: Lv." + bicepsLevel + "  (" + data.hardgym$getBicepsXp() + " XP)").formatted(Formatting.AQUA), false);
                 player.sendMessage(new LiteralText("Chest: Lv." + chestLevel + "  (" + data.hardgym$getChestXp() + " XP)").formatted(Formatting.GREEN), false);
                 player.sendMessage(new LiteralText("Triceps: Lv." + tricepsLevel + "  (" + data.hardgym$getTricepsXp() + " XP)").formatted(Formatting.BLUE), false);
                 player.sendMessage(new LiteralText("Legs: Lv." + legsLevel + "  (" + data.hardgym$getLegsXp() + " XP)").formatted(Formatting.DARK_GREEN), false);
+                player.sendMessage(new LiteralText("Сила жима (среднее Chest/Triceps): Lv."
+                        + GymMuscleStrength.benchLevel(data) + " | Сила приседа и становой (Legs): Lv."
+                        + GymMuscleStrength.legsLevel(data)).formatted(Formatting.AQUA), false);
                 player.sendMessage(new LiteralText("Stamina: " + data.hardgym$getStamina() + "%   Fatigue: " + data.hardgym$getFatigue()
                         + "%   Ночей без сна подряд: " + data.hardgym$getMissedSleepNights())
                         .formatted(Formatting.WHITE), false);
@@ -132,10 +203,15 @@ public class HardGymMod implements ModInitializer {
                         + "   |   Squat PR: " + (data.hardgym$getSquatPr() > 0 ? data.hardgym$getSquatPr() + " кг" : "---")
                         + "   |   Deadlift PR: " + (data.hardgym$getDeadliftPr() > 0 ? data.hardgym$getDeadliftPr() + " кг" : "---"))
                         .formatted(Formatting.LIGHT_PURPLE), false);
-                player.sendMessage(new LiteralText("Оценочный 1ПМ: жим "
+                player.sendMessage(new LiteralText("1ПМ по выполненным подходам: жим "
                         + StrengthRepTable.roundedKg(data.hardgym$getBenchEstimated1Rm()) + " кг   |   присед "
                         + StrengthRepTable.roundedKg(data.hardgym$getSquatEstimated1Rm()) + " кг   |   становая "
                         + StrengthRepTable.roundedKg(data.hardgym$getDeadliftEstimated1Rm()) + " кг")
+                        .formatted(Formatting.AQUA), false);
+                player.sendMessage(new LiteralText("Доступные веса по мышцам: жим до "
+                        + BenchPressManager.maxUnlockedWeight(data) + " кг | присед до "
+                        + SquatManager.maxUnlockedWeight(data) + " кг | становая до "
+                        + DeadliftManager.maxUnlockedWeight(data) + " кг")
                         .formatted(Formatting.AQUA), false);
                 player.sendMessage(new LiteralText("Bench reps: " + data.hardgym$getBenchPressReps() + "   Squat reps: " + data.hardgym$getSquatReps()
                         + "   Deadlift reps: " + data.hardgym$getDeadliftReps()
@@ -143,19 +219,58 @@ public class HardGymMod implements ModInitializer {
                 return 1;
             }));
 
-            dispatcher.register(literal("gymkit").executes(context -> {
+            dispatcher.register(literal("gymreset").executes(context -> {
                 ServerPlayerEntity player = context.getSource().getPlayer();
-                player.giveItemStack(new ItemStack(DUMBBELL_5KG));
-                player.giveItemStack(new ItemStack(DUMBBELL_10KG));
-                player.giveItemStack(new ItemStack(DUMBBELL_20KG));
-                player.giveItemStack(new ItemStack(BENCH_PRESS_STATION));
-                player.giveItemStack(new ItemStack(SQUAT_RACK));
-                player.giveItemStack(new ItemStack(DEADLIFT_BAR));
-                player.sendMessage(new LiteralText("HardGym v0.9.2 kit: гантели + жим + присед + становая.")
-                        .formatted(Formatting.GREEN), false);
+                resetProgress(player);
+                player.sendMessage(new LiteralText(
+                        "HardGym: прогресс сброшен. Все навыки Lv.1, stamina 100%, FAT 0%."
+                ).formatted(Formatting.GREEN), false);
                 return 1;
             }));
+
         });
+    }
+
+    private void resetProgress(ServerPlayerEntity player) {
+        // End sessions first so active repetitions cannot recreate cleared progress.
+        if (player.isUsingItem() && player.getActiveItem().getItem() instanceof DumbbellItem) {
+            player.stopUsingItem();
+        }
+        BenchPressManager.stopForPlayer(player);
+        SquatManager.stopForPlayer(player);
+        DeadliftManager.stopForPlayer(player);
+        ((BenchPlayerState)player).hardgym$setBenchPos(null);
+
+        GymPlayerData data = (GymPlayerData) player;
+        data.hardgym$setStrengthXp(0);
+        data.hardgym$setStrengthIdleSeconds(0);
+        data.hardgym$setBicepsXp(0);
+        data.hardgym$setChestXp(0);
+        data.hardgym$setTricepsXp(0);
+        data.hardgym$setLegsXp(0);
+        data.hardgym$setBenchXp(0);
+        data.hardgym$setSquatXp(0);
+        data.hardgym$setDeadliftXp(0);
+        data.hardgym$setTotalReps(0);
+        data.hardgym$setBenchPressReps(0);
+        data.hardgym$setSquatReps(0);
+        data.hardgym$setDeadliftReps(0);
+        data.hardgym$setBenchPressPr(0);
+        data.hardgym$setSquatPr(0);
+        data.hardgym$setDeadliftPr(0);
+        data.hardgym$setBenchEstimated1Rm(0.0D);
+        data.hardgym$setSquatEstimated1Rm(0.0D);
+        data.hardgym$setDeadliftEstimated1Rm(0.0D);
+        data.hardgym$setStamina(100);
+        data.hardgym$setFatigue(0);
+        data.hardgym$setMissedSleepNights(0);
+        data.hardgym$setLastSleepCheckDay(player.getServerWorld().getTimeOfDay() / 24000L);
+        sleepTicks.remove(player.getUuid());
+        sleepStartTime.remove(player.getUuid());
+
+        GymAttributeManager.update(player);
+        syncPhysique(player);
+        GymHud.hide(player);
     }
 
     private void registerInputNetworking() {
@@ -180,7 +295,7 @@ public class HardGymMod implements ModInitializer {
             DeadliftManager.tick(server);
 
             // Sleep / sleep-deprivation system.
-            // A completed night of sleep restores FAT and resets the consecutive missed-night streak.
+            // A completed night fully restores stamina, restores FAT and resets the missed-night streak.
             // If a full Minecraft night passes while the player is awake, FAT rises:
             // 1st missed night +30, 2nd +45, 3rd +60, 4th +75,
             // 5th and every later consecutive missed night +90.
@@ -217,6 +332,7 @@ public class HardGymMod implements ModInitializer {
                                 && slept >= 40;
 
                         if (completedNightSleep) {
+                            data.hardgym$setStamina(100);
                             int before = data.hardgym$getFatigue();
                             data.hardgym$setFatigue(before - SLEEP_FATIGUE_RESTORE);
                             int restored = before - data.hardgym$getFatigue();
@@ -225,12 +341,9 @@ public class HardGymMod implements ModInitializer {
                             data.hardgym$setMissedSleepNights(0);
                             data.hardgym$setLastSleepCheckDay(wakeDay);
 
-                            if (restored > 0) {
-                                player.sendMessage(new LiteralText("Полный сон восстановил " + restored + "% FAT")
-                                        .formatted(Formatting.AQUA), true);
-                            }
-                            player.sendMessage(new LiteralText("Серия ночей без сна сброшена.")
-                                    .formatted(Formatting.GREEN), true);
+                            player.sendMessage(new LiteralText("Полный сон: stamina 100%, восстановлено "
+                                    + restored + "% FAT. Серия ночей без сна сброшена.")
+                                    .formatted(Formatting.AQUA), true);
                             GymHud.showRecoveryOrHide(player);
                         }
                     }
@@ -305,9 +418,10 @@ public class HardGymMod implements ModInitializer {
         GymPlayerData data = (GymPlayerData) player;
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(GymStats.levelForXp(data.hardgym$getStrengthXp()));
-        buf.writeInt(GymStats.levelForXp(data.hardgym$getBenchXp()));
+        buf.writeInt(GymMuscleStrength.benchLevel(data));
         buf.writeInt(GymStats.levelForXp(data.hardgym$getSquatXp()));
         buf.writeInt(GymStats.levelForXp(data.hardgym$getDeadliftXp()));
+        buf.writeInt(GymStats.levelForXp(data.hardgym$getBicepsXp()));
         ServerPlayNetworking.send(player, PHYSIQUE_SYNC_PACKET, buf);
     }
 

@@ -37,10 +37,14 @@ public final class GymHudOverlay {
 
     public static void render(MatrixStack matrices) {
         if (mode == GymHud.MODE_HIDDEN) return;
-        if (mode != GymHud.MODE_RECOVERY && ticksSinceUpdate > 18 && stamina >= 100) return;
 
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.world == null) return;
+        boolean curling = (mode == GymHud.MODE_DUMBBELL || mode == GymHud.MODE_DUMBBELL_PAIR)
+                && DumbbellArmPose.isCurling(client.player);
+        // Starting a valid set shows zero reps at full stamina. Keep that HUD
+        // visible while awaiting the first complete cycle, even for slow weights.
+        if (mode != GymHud.MODE_RECOVERY && ticksSinceUpdate > 18 && stamina >= 100 && !curling) return;
 
         TextRenderer text = client.textRenderer;
         int screenWidth = client.getWindow().getScaledWidth();
@@ -67,6 +71,7 @@ public final class GymHudOverlay {
 
         String title;
         if (mode == GymHud.MODE_DUMBBELL) title = "ГАНТЕЛЬ  " + weightKg + " КГ";
+        else if (mode == GymHud.MODE_DUMBBELL_PAIR) title = "ГАНТЕЛИ  2×" + weightKg + " КГ";
         else if (recovering) title = "ВОССТАНОВЛЕНИЕ";
         else if (squat) title = "ПРИСЕД  " + weightKg + " КГ";
         else if (deadlift) title = "СТАНОВАЯ  " + weightKg + " КГ";
@@ -76,7 +81,7 @@ public final class GymHudOverlay {
         String repText = recovering ? "" : "ПОВТ  " + reps;
         String state = stateText();
         text.drawWithShadow(matrices, title, x + 11, y + 7, titleColor);
-        if (!pinned) {
+        if (!pinned && mode != GymHud.MODE_DUMBBELL_PAIR) {
             text.drawWithShadow(matrices, state, x + panelWidth / 2 - text.getWidth(state) / 2, y + 7, 0xFFB8C0C8);
         }
         if (!repText.isEmpty()) {
@@ -157,7 +162,7 @@ public final class GymHudOverlay {
         if (mode == GymHud.MODE_BENCH) return "ЖИМ";
         if (mode == GymHud.MODE_SQUAT) return "ПРИСЕД";
         if (mode == GymHud.MODE_DEADLIFT) return "ТЯНИ";
-        if (mode == GymHud.MODE_DUMBBELL) return "ПОДХОД";
+        if (mode == GymHud.MODE_DUMBBELL || mode == GymHud.MODE_DUMBBELL_PAIR) return "ПОДХОД";
         if (mode == GymHud.MODE_RECOVERY) return "ОТДЫХ";
         return "";
     }

@@ -1,0 +1,4 @@
+HardGym v0.10.7
+
+Fix: the squat mounted bar in v0.10.6 moved in the wrong Z direction.
+This version applies the same idea in the opposite direction, based on the v0.10.5 baseline.

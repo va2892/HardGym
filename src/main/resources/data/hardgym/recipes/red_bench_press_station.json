@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    "IWI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "W": {
+      "item": "minecraft:red_wool"
+    }
+  },
+  "result": {
+    "item": "hardgym:red_bench_press_station",
+    "count": 1
+  },
+  "group": "hardgym:bench_press_stations"
+}

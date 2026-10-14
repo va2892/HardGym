@@ -1,6 +1,7 @@
 package com.hardgym.player;
 
 import com.hardgym.HardGymMod;
+import com.hardgym.training.BenchPressManager;
 import com.hardgym.training.SquatManager;
 import com.hardgym.training.DeadliftManager;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -21,11 +22,18 @@ public final class GymHud {
     public static final int MODE_SQUAT_PINNED = 8;
     public static final int MODE_DEADLIFT = 9;
     public static final int MODE_DEADLIFT_WAITING = 10;
+    public static final int MODE_DUMBBELL_PAIR = 11;
 
     private GymHud() { }
 
     public static void showDumbbell(ServerPlayerEntity player, int weightKg, int rep, int stamina, int fatigue) {
-        send(player, MODE_DUMBBELL, weightKg, rep, stamina, fatigue, 100, Math.round(player.getHealth()));
+        showDumbbell(player, weightKg, false, rep, stamina, fatigue);
+    }
+
+    public static void showDumbbell(ServerPlayerEntity player, int weightKg, boolean pair,
+                                    int rep, int stamina, int fatigue) {
+        send(player, pair ? MODE_DUMBBELL_PAIR : MODE_DUMBBELL, weightKg, rep, stamina, fatigue,
+                100, Math.round(player.getHealth()));
     }
 
     public static void showBench(ServerPlayerEntity player, int weightKg, int rep, int stamina, int fatigue, int progressPercent) {
@@ -95,52 +103,13 @@ public final class GymHud {
     }
 
     private static int maxUnlockedWeightForMode(ServerPlayerEntity player, int mode) {
+        GymPlayerData data = (GymPlayerData) player;
         if (mode == MODE_SQUAT || mode == MODE_SQUAT_WAITING || mode == MODE_SQUAT_PINNED) {
-            return maxUnlockedSquatWeight(player);
+            return SquatManager.maxUnlockedWeight(data);
         }
         if (mode == MODE_DEADLIFT || mode == MODE_DEADLIFT_WAITING) {
-            return maxUnlockedDeadliftWeight(player);
+            return DeadliftManager.maxUnlockedWeight(data);
         }
-        return maxUnlockedBenchWeight(player);
-    }
-
-    private static int maxUnlockedBenchWeight(ServerPlayerEntity player) {
-        GymPlayerData data = (GymPlayerData) player;
-        int strength = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        if (strength >= 20) return 220;
-        if (strength >= 18) return 200;
-        if (strength >= 16) return 180;
-        if (strength >= 14) return 160;
-        if (strength >= 12) return 140;
-        if (strength >= 10) return 120;
-        if (strength >= 7) return 100;
-        if (strength >= 6) return 90;
-        if (strength >= 5) return 80;
-        if (strength >= 4) return 70;
-        if (strength >= 3) return 60;
-        if (strength >= 2) return 40;
-        return 0;
-    }
-
-    private static int maxUnlockedDeadliftWeight(ServerPlayerEntity player) {
-        GymPlayerData data = (GymPlayerData) player;
-        int strength = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int[] weights = {40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300};
-        int max = 0;
-        for (int weight : weights) {
-            if (strength >= DeadliftManager.requiredStrength(weight)) max = weight;
-        }
-        return max;
-    }
-
-    private static int maxUnlockedSquatWeight(ServerPlayerEntity player) {
-        GymPlayerData data = (GymPlayerData) player;
-        int strength = GymStats.levelForXp(data.hardgym$getStrengthXp());
-        int[] weights = {40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300};
-        int max = 0;
-        for (int weight : weights) {
-            if (strength >= SquatManager.requiredStrength(weight)) max = weight;
-        }
-        return max;
+        return BenchPressManager.maxUnlockedWeight(data);
     }
 }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    " D ",
+    "I I"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "D": { "item": "hardgym:dumbbell_5kg" }
+  },
+  "result": {
+    "item": "hardgym:dumbbell_10kg",
+    "count": 1
+  }
+}

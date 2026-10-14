@@ -1,0 +1,6 @@
+HardGym v0.10.12
+
+Bench press leg-pose update:
+- spread the upper legs outward
+- raised the thighs more
+- enabled bench knee bend in OptionalPlayerAnimator for setups with PlayerAnimator + BendyLib

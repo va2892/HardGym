@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "PlayerEntityMixin",
+    "BenchPlayerPhysicsMixin",
     "PotionItemMixin",
     "LivingEntityMixin",
     "ItemFoodFatigueMixin"
@@ -15,6 +16,10 @@
   "client": [
     "client.BipedEntityModelMixin",
     "client.PlayerEntityRendererMixin",
-    "client.CameraMixin"
+    "client.CameraMixin",
+    "client.ParticleManagerMixin",
+    "client.HeldItemFeatureRendererMixin",
+    "client.HeldItemRendererMixin",
+    "client.ItemRendererMixin"
   ]
 }
