@@ -1,5 +1,0 @@
-HardGym v0.10.11
-
-Bench press fine-tune:
-- lock position changed from 1.04 to 1.16 blocks along the bench facing axis.
-- Goal: move the player a little farther toward the foot-end so the hands at ~90 degrees clear the uprights.
