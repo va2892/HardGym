@@ -1,4 +1,0 @@
-HardGym v0.10.8
-
-Third-person squat bar position is unchanged from v0.10.7.
-Only the first-person squat camera is moved from rack offset 0.42 to 0.14 blocks, placing it beyond the bar so the bar is behind the camera.
