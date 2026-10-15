@@ -12,7 +12,6 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-/** Server-owned plate inventory, persisted in chunks and synchronized to viewers. */
 public final class BarbellBlockEntity extends BlockEntity implements BlockEntityClientSerializable, Tickable {
     private BarbellLoad load;
     private float exercisePhase;
@@ -25,8 +24,7 @@ public final class BarbellBlockEntity extends BlockEntity implements BlockEntity
     }
 
     private static int capacity(BlockState state) {
-        return state.getBlock() instanceof BarbellStationBlock
-                ? ((BarbellStationBlock) state.getBlock()).getPairCapacity() : 9;
+        return state.getBlock() instanceof BarbellStationBlock ? ((BarbellStationBlock) state.getBlock()).getPairCapacity() : 9;
     }
 
     private BarbellLoad load() {
@@ -56,7 +54,6 @@ public final class BarbellBlockEntity extends BlockEntity implements BlockEntity
         if (hasExercisePhase && exercisePhase == phase) return;
         exercisePhase = phase;
         hasExercisePhase = true;
-        // Transient motion is sent to chunk viewers, but never dirties the saved plate inventory.
         if (world != null && !world.isClient) sync();
     }
 
@@ -66,8 +63,7 @@ public final class BarbellBlockEntity extends BlockEntity implements BlockEntity
 
     public float getExercisePhase(float tickDelta) {
         if (!visualInitialized) return targetPhase();
-        return previousVisualPhase + (visualPhase - previousVisualPhase)
-                * ExerciseAnimation.clamp(tickDelta, 0.0F, 1.0F);
+        return previousVisualPhase + (visualPhase - previousVisualPhase) * ExerciseAnimation.clamp(tickDelta, 0.0F, 1.0F);
     }
 
     @Override
@@ -85,7 +81,6 @@ public final class BarbellBlockEntity extends BlockEntity implements BlockEntity
         }
         previousVisualPhase = visualPhase;
         float distance = targetPhase() - visualPhase;
-        // Follow ordinary 20 Hz updates; gently catch up if several packets arrive together.
         float step = ExerciseAnimation.clamp(distance * 0.65F, -0.35F, 0.35F);
         visualPhase += step;
         if (Math.abs(distance) < 0.00001F) visualPhase = targetPhase();
