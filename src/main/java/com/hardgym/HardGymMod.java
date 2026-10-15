@@ -20,6 +20,7 @@ import com.hardgym.player.StrengthDecay;
 import com.hardgym.player.StrengthRepTable;
 import com.hardgym.training.BenchPressManager;
 import com.hardgym.training.DeadliftManager;
+import com.hardgym.training.ExerciseInteractionGuard;
 import com.hardgym.training.SquatManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -137,6 +138,7 @@ public class HardGymMod implements ModInitializer {
 
         registerCommands();
         registerInputNetworking();
+        ExerciseInteractionGuard.register();
         registerServerTick();
         registerRespawnCopy();
     }

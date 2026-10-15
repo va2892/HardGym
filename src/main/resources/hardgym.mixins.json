@@ -8,7 +8,10 @@
     "BenchPlayerPhysicsMixin",
     "PotionItemMixin",
     "LivingEntityMixin",
-    "ItemFoodFatigueMixin"
+    "ItemFoodFatigueMixin",
+    "ServerPlayerInteractionManagerMixin",
+    "ExerciseInventoryNetworkMixin",
+    "ExerciseItemPickupMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -20,6 +23,9 @@
     "client.ParticleManagerMixin",
     "client.HeldItemFeatureRendererMixin",
     "client.HeldItemRendererMixin",
-    "client.ItemRendererMixin"
+    "client.ItemRendererMixin",
+    "client.ClientPlayerInteractionManagerMixin",
+    "client.ExerciseHotbarMixin",
+    "client.ExerciseInputMixin"
   ]
 }

@@ -73,6 +73,8 @@ public final class SquatManager {
             return;
         }
 
+        if (!ExerciseInteractionGuard.requireEmptyHands(player)) return;
+
         GymPlayerData data = (GymPlayerData) player;
         int muscleLevel = GymMuscleStrength.legsLevel(data);
         int required = requiredLevel(weightKg);

@@ -37,3 +37,9 @@ tasks.withType(JavaCompile).configureEach {
 java {
     withSourcesJar()
 }
+
+jar {
+    from('LICENSE') {
+        rename { "LICENSE_${project.archivesBaseName}" }
+    }
+}

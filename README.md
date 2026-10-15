@@ -91,6 +91,25 @@ Dumbbell artwork by Digital Art Studio via Vecteezy, adapted for the HardGym ico
 
 # История версий
 
+## v0.10.71 - Empty Hands and Workout Inventory Lock
+
+- Required both hands to be empty before starting bench press, squats or deadlifts; rejected starts show a message without spending stamina.
+- Kept paired dumbbell training available with the pair in one hand and the other hand empty.
+- Blocked hotbar changes through number keys and scrolling, offhand swaps, item drops, inventory moves, creative item changes and pick-block during a workout.
+- Temporarily blocked opening the inventory and collecting dropped items so equipment cannot appear in the hands during a set.
+- Enforced the restrictions on the server and restored the authoritative inventory after rejected item-move packets.
+- Preserved right-click repetitions, release-to-stop for dumbbells, Shift exit, camera controls and normal inventory use after the set.
+
+
+## v0.10.70 - Workout Interaction Lock
+
+- Blocked opening containers, using blocks, placing blocks, using other items, interacting with entities and attacking while performing any exercise.
+- Applied the restriction on both client and server, including paused and pinned barbell phases and block breaking started before a set.
+- Preserved exercise controls: holding right-click performs repetitions, Shift exits barbell exercises, and releasing right-click ends dumbbell training.
+- Kept nearby players unaffected and restored normal interactions after the workout ends.
+- Matched the mod license metadata to the existing HardGym Non-Commercial License and included LICENSE in the built JAR.
+
+
 ## v0.10.69 - Forge 1.20.1 Port
 
 - Ported HardGym from Fabric 1.16.5 to Minecraft 1.20.1 Forge.

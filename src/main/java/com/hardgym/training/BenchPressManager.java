@@ -65,6 +65,8 @@ public final class BenchPressManager {
             return;
         }
 
+        if (!ExerciseInteractionGuard.requireEmptyHands(player)) return;
+
         GymPlayerData data = (GymPlayerData) player;
         int muscleLevel = GymMuscleStrength.benchLevel(data);
         int required = requiredLevel(weightKg);

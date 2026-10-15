@@ -7,7 +7,7 @@
   "authors": [
     "HardGym Team"
   ],
-  "license": "MIT",
+  "license": "LicenseRef-HardGym-Non-Commercial-1.0",
   "environment": "*",
   "entrypoints": {
     "main": [
