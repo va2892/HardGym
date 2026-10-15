@@ -24,13 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-/** Stores the actual item stacks, including names and other item NBT. */
-public final class EquipmentRackBlockEntity extends BlockEntity
-        implements Inventory, BlockEntityClientSerializable, Tickable {
+public final class EquipmentRackBlockEntity extends BlockEntity implements Inventory, BlockEntityClientSerializable, Tickable {
     private final DefaultedList<ItemStack> stacks = DefaultedList.ofSize(6, ItemStack.EMPTY);
     private static final String PARTNERS_KEY = "DumbbellPairPartners";
-    // The real pair item lives in one slot. Its partner is a reserved display slot,
-    // never a second inventory item, so hoppers and breaking cannot duplicate it.
     private final int[] partners = new int[6];
     private static final String CROSS_PARTNERS_KEY = "DumbbellCrossPartners";
     private static final String CROSS_DISPLAYS_KEY = "DumbbellCrossDisplays";
@@ -50,7 +46,6 @@ public final class EquipmentRackBlockEntity extends BlockEntity
         }
     }
 
-    /** A picture of the partner, not an Inventory stack or a second droppable item. */
     private static final class Display {
         final Link owner;
         ItemStack stack;
@@ -70,8 +65,7 @@ public final class EquipmentRackBlockEntity extends BlockEntity
 
     public boolean isPlateRack() {
         BlockState state = getCachedState();
-        return state != null && state.getBlock() instanceof EquipmentRackBlock
-                && ((EquipmentRackBlock) state.getBlock()).isPlateRack();
+        return state != null && state.getBlock() instanceof EquipmentRackBlock && ((EquipmentRackBlock) state.getBlock()).isPlateRack();
     }
 
     @Override
@@ -88,15 +82,12 @@ public final class EquipmentRackBlockEntity extends BlockEntity
     public boolean isValid(int slot, ItemStack stack) {
         if (slot < 0 || slot >= size() || stack.isEmpty()) return false;
         BlockState state = getCachedState();
-        if (state == null || !(state.getBlock() instanceof EquipmentRackBlock)
-                || !((EquipmentRackBlock) state.getBlock()).accepts(stack.getItem())) return false;
-        if (isPlateRack()) return ((PlatePairItem) stack.getItem()).getPlateWeightKg()
-                == EquipmentRackLayout.plateWeight(slot);
+        if (state == null || !(state.getBlock() instanceof EquipmentRackBlock) || !((EquipmentRackBlock) state.getBlock()).accepts(stack.getItem())) return false;
+        if (isPlateRack()) return ((PlatePairItem) stack.getItem()).getPlateWeightKg() == EquipmentRackLayout.plateWeight(slot);
         if (ownerOf(slot) != slot || crossDisplays[slot] != null) return false;
         return !isPair(stack) || findPartner(new Place(this, slot), connectedRacks(), false) != null;
     }
 
-    /** Only remove from the player's stack after a valid destination has been found. */
     public int insert(ItemStack held, int preferredSlot, int requested) {
         if (held.isEmpty() || requested <= 0) return 0;
         if (!isPlateRack() && held.getItem() instanceof DumbbellPairItem) {
@@ -111,8 +102,7 @@ public final class EquipmentRackBlockEntity extends BlockEntity
             int slot = (first + offset) % size();
             if (!isValid(slot, held)) continue;
             ItemStack stored = stacks.get(slot);
-            if (!stored.isEmpty() && (!ItemStack.areItemsEqual(stored, held)
-                    || !ItemStack.areTagsEqual(stored, held))) continue;
+            if (!stored.isEmpty() && (!ItemStack.areItemsEqual(stored, held) || !ItemStack.areTagsEqual(stored, held))) continue;
             int room = Math.min(getMaxCountPerStack(), held.getMaxCount()) - stored.getCount();
             int moved = Math.min(remaining, Math.max(0, room));
             if (moved == 0) continue;
@@ -164,7 +154,6 @@ public final class EquipmentRackBlockEntity extends BlockEntity
         return getCachedState().get(EquipmentRackBlock.FACING).rotateYClockwise();
     }
 
-    /** Never ask getBlockEntity/getBlockState to load a neighboring chunk. */
     private EquipmentRackBlockEntity loadedRack(BlockPos location) {
         EquipmentRackBlockEntity rack = entityAt(location);
         if (rack == null) return null;
@@ -195,13 +184,11 @@ public final class EquipmentRackBlockEntity extends BlockEntity
         return row;
     }
 
-    /** 1: connected, 0: separated, -1: a required chunk is currently unloaded. */
     private int connectionStatus(BlockPos other) {
         Direction right = rightDirection();
         int dx = other.getX() - pos.getX(), dz = other.getZ() - pos.getZ();
         int distance = dx * right.getOffsetX() + dz * right.getOffsetZ();
-        if (other.getY() != pos.getY() || dx != distance * right.getOffsetX()
-                || dz != distance * right.getOffsetZ()) return 0;
+        if (other.getY() != pos.getY() || dx != distance * right.getOffsetX() || dz != distance * right.getOffsetZ()) return 0;
         Direction step = distance < 0 ? right.getOpposite() : right;
         BlockPos cursor = pos;
         for (int i = 0; i < Math.abs(distance); i++) {
@@ -223,13 +210,11 @@ public final class EquipmentRackBlockEntity extends BlockEntity
         return !stack.isEmpty() && stack.getItem() instanceof DumbbellPairItem;
     }
 
-    /** Find the nearest unoccupied display position, including our old partner. */
     private int findPartner(int primary) {
         int best = -1;
         int bestDistance = Integer.MAX_VALUE;
         for (int candidate = 0; candidate < stacks.size(); candidate++) {
-            if (candidate == primary || !stacks.get(candidate).isEmpty()
-                    || crossDisplays[candidate] != null) continue;
+            if (candidate == primary || !stacks.get(candidate).isEmpty() || crossDisplays[candidate] != null) continue;
             int owner = ownerOf(candidate);
             if (owner != candidate && owner != primary) continue;
             int dx = primary % 3 - candidate % 3;
@@ -249,11 +234,9 @@ public final class EquipmentRackBlockEntity extends BlockEntity
         if (localOwner != slot && (primary.rack != this || localOwner != primary.slot)) return false;
         Display display = crossDisplays[slot];
         Link link = primary.rack.crossPartners[primary.slot];
-        return display == null || link != null
-                && display.owner.matches(primary.rack.pos, primary.slot, link.id);
+        return display == null || link != null && display.owner.matches(primary.rack.pos, primary.slot, link.id);
     }
 
-    /** Prefer a free position on the same shelf, including the next rack section. */
     private Place findPartner(Place primary, List<EquipmentRackBlockEntity> row, boolean sameShelf) {
         Place best = null;
         double bestDistance = Double.POSITIVE_INFINITY;
@@ -262,11 +245,9 @@ public final class EquipmentRackBlockEntity extends BlockEntity
         for (int block = 0; block < row.size(); block++) {
             EquipmentRackBlockEntity rack = row.get(block);
             for (int slot = 0; slot < 6; slot++) {
-                if (rack == primary.rack && slot == primary.slot || sameShelf && slot / 3 != primary.slot / 3
-                        || !rack.availableFor(slot, primary)) continue;
+                if (rack == primary.rack && slot == primary.slot || sameShelf && slot / 3 != primary.slot / 3 || !rack.availableFor(slot, primary)) continue;
                 double dx = (block - origin) * 16.0D + (slot % 3 - primary.slot % 3) * 5.0D;
                 double dy = (slot / 3 - primary.slot / 3) * 7.0D;
-                // Any horizontal destination takes priority over switching shelves.
                 double distance = dx * dx + (dy == 0 ? 0 : 1.0E12D);
                 if (distance < bestDistance) { best = new Place(rack, slot); bestDistance = distance; }
             }
@@ -299,14 +280,11 @@ public final class EquipmentRackBlockEntity extends BlockEntity
 
     private int insertPair(ItemStack held, int preferredSlot) {
         BlockState state = getCachedState();
-        if (!(state.getBlock() instanceof EquipmentRackBlock)
-                || !((EquipmentRackBlock) state.getBlock()).accepts(held.getItem())) return 0;
+        if (!(state.getBlock() instanceof EquipmentRackBlock) || !((EquipmentRackBlock) state.getBlock()).accepts(held.getItem())) return 0;
         List<EquipmentRackBlockEntity> row = connectedRacks();
         for (EquipmentRackBlockEntity rack : row) rack.reconcileLinks();
         int first = Math.max(0, Math.min(5, preferredSlot));
         int width = row.size() * 3, start = row.indexOf(this) * 3;
-        // Fill the selected shelf across the whole row before using another shelf.
-        // Only fall back to a vertical pair when neither shelf has room for two.
         for (int pass = 0; pass < 3; pass++) {
             int shelf = pass == 1 ? 1 - first / 3 : first / 3;
             for (int offset = 0; offset < width; offset++) {
@@ -377,14 +355,10 @@ public final class EquipmentRackBlockEntity extends BlockEntity
 
     @Override
     public void setStack(int slot, ItemStack stack) {
-        // A reserved display position is EMPTY to Inventory callers. Writing
-        // EMPTY there must not silently delete the real item in its owner slot.
-        if (slot < 0 || slot >= size() || ownerOf(slot) != slot || crossDisplays[slot] != null
-                || (!stack.isEmpty() && !isValid(slot, stack))) return;
+        if (slot < 0 || slot >= size() || ownerOf(slot) != slot || crossDisplays[slot] != null || (!stack.isEmpty() && !isValid(slot, stack))) return;
         Place partner = isPair(stack) ? findPartner(new Place(this, slot), connectedRacks(), false) : null;
         if (isPair(stack) && partner == null) return;
-        if (!stack.isEmpty()) stack.setCount(Math.min(stack.getCount(),
-                Math.min(getMaxCountPerStack(), stack.getMaxCount())));
+        if (!stack.isEmpty()) stack.setCount(Math.min(stack.getCount(), Math.min(getMaxCountPerStack(), stack.getMaxCount())));
         releasePartner(slot);
         stacks.set(slot, stack);
         if (partner != null) reservePartner(slot, partner);
@@ -398,8 +372,7 @@ public final class EquipmentRackBlockEntity extends BlockEntity
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        return world != null && world.getBlockEntity(pos) == this
-                && player.squaredDistanceTo(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+        return world != null && world.getBlockEntity(pos) == this && player.squaredDistanceTo(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
@@ -430,14 +403,11 @@ public final class EquipmentRackBlockEntity extends BlockEntity
             int connection = connectionStatus(display.owner.rack);
             if (connection < 0) continue;
             EquipmentRackBlockEntity owner = loadedRack(display.owner.rack);
-            // A rack state can arrive before its block entity while a chunk loads.
             if (owner == null && connection == 1) continue;
             Link link = owner == null ? null : owner.crossPartners[display.owner.slot];
-            if (connection == 0 || link == null || !link.matches(pos, slot, display.owner.id)
-                    || !isPair(owner.stacks.get(display.owner.slot))) {
+            if (connection == 0 || link == null || !link.matches(pos, slot, display.owner.id) || !isPair(owner.stacks.get(display.owner.slot))) {
                 crossDisplays[slot] = null; changed = true;
-            } else if (!ItemStack.areItemsEqual(display.stack, owner.stacks.get(display.owner.slot))
-                    || !ItemStack.areTagsEqual(display.stack, owner.stacks.get(display.owner.slot))) {
+            } else if (!ItemStack.areItemsEqual(display.stack, owner.stacks.get(display.owner.slot)) || !ItemStack.areTagsEqual(display.stack, owner.stacks.get(display.owner.slot))) {
                 display.stack = owner.stacks.get(display.owner.slot).copy(); changed = true;
             }
         }
@@ -472,10 +442,6 @@ public final class EquipmentRackBlockEntity extends BlockEntity
     }
 
     private void readItems(NbtCompound tag) {
-        // Chunk loading can call this before the entity is attached to its world.
-        // isValid/getMaxCountPerStack rely on getCachedState and must not be used
-        // here: an unavailable rack state would silently delete saved equipment.
-        // New insertions remain validated by insert/setStack.
         stacks.clear();
         Inventories.readNbt(tag, stacks);
         Arrays.fill(partners, -1);
@@ -486,15 +452,13 @@ public final class EquipmentRackBlockEntity extends BlockEntity
             NbtCompound record = links.getCompound(i);
             int slot = record.getInt("Slot");
             Link link = readLink(record);
-            if (slot >= 0 && slot < 6 && isPair(stacks.get(slot)) && link != null
-                    && !link.rack.equals(pos)) crossPartners[slot] = link;
+            if (slot >= 0 && slot < 6 && isPair(stacks.get(slot)) && link != null && !link.rack.equals(pos)) crossPartners[slot] = link;
         }
         int[] savedPartners = tag.getIntArray(PARTNERS_KEY);
         for (int slot = 0; slot < stacks.size(); slot++) {
             if (!isPair(stacks.get(slot)) || crossPartners[slot] != null) continue;
             int partner = slot < savedPartners.length ? savedPartners[slot] : -1;
-            if (partner < 0 || partner >= stacks.size() || partner == slot
-                    || !stacks.get(partner).isEmpty() || ownerOf(partner) != partner) {
+            if (partner < 0 || partner >= stacks.size() || partner == slot || !stacks.get(partner).isEmpty() || ownerOf(partner) != partner) {
                 partner = findPartner(slot);
             }
             partners[slot] = partner;
@@ -505,8 +469,7 @@ public final class EquipmentRackBlockEntity extends BlockEntity
             int slot = record.getInt("Slot");
             Link owner = readLink(record);
             ItemStack display = ItemStack.fromNbt(record.getCompound("Display"));
-            if (slot >= 0 && slot < 6 && stacks.get(slot).isEmpty() && ownerOf(slot) == slot
-                    && owner != null && !owner.rack.equals(pos) && isPair(display)) {
+            if (slot >= 0 && slot < 6 && stacks.get(slot).isEmpty() && ownerOf(slot) == slot && owner != null && !owner.rack.equals(pos) && isPair(display)) {
                 display.setCount(1); crossDisplays[slot] = new Display(owner, display);
             }
         }
