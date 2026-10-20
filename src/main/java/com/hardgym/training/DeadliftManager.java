@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-/** Manual deadlift exercise: hold RMB to pull, release to lower. */
 public final class DeadliftManager {
     private static final Map<UUID, DeadliftSession> SESSIONS = new HashMap<>();
     private static final double STAND_OFFSET = 0.58D;
@@ -77,8 +76,7 @@ public final class DeadliftManager {
         int required = requiredLevel(weightKg);
         if (muscleLevel < required) {
             player.sendMessage(new LiteralText("Слишком тяжело для становой. Нужны ноги (Legs) Lv."
-                    + required + " (сейчас Lv." + muscleLevel + ").")
-                    .formatted(Formatting.RED), true);
+                + required + " (сейчас Lv." + muscleLevel + ").").formatted(Formatting.RED), true);
             return;
         }
 
@@ -86,8 +84,7 @@ public final class DeadliftManager {
         int targetReps = StrengthRepTable.targetRepsWithFatigue(weightKg, oneRepMax, data.hardgym$getFatigue());
         int staminaCost = StrengthRepTable.staminaCostForTarget(targetReps);
         if (data.hardgym$getStamina() < staminaCost || data.hardgym$getFatigue() >= 95) {
-            player.sendMessage(new LiteralText("Ты слишком устал для становой. Отдохни.")
-                    .formatted(Formatting.RED), true);
+            player.sendMessage(new LiteralText("Ты слишком устал для становой. Отдохни.").formatted(Formatting.RED), true);
             return;
         }
 
@@ -119,18 +116,15 @@ public final class DeadliftManager {
                 playDropSound(session, 0.70F);
                 releasePlayer(player, session);
                 resetBar(session);
-                player.sendMessage(new LiteralText("Подход становой закончен: " + session.reps + " повт. × " + session.weightKg + " кг")
-                        .formatted(Formatting.GRAY), true);
+                player.sendMessage(new LiteralText("Подход становой закончен: " + session.reps + " повт. × " + session.weightKg + " кг").formatted(Formatting.GRAY), true);
                 GymHud.showRecoveryOrHide(player);
                 iterator.remove();
                 continue;
             }
 
-            if (player.getServerWorld() != session.world
-                    || session.world.getBlockState(session.pos).getBlock() != HardGymMod.DEADLIFT_BAR) {
+            if (player.getServerWorld() != session.world || session.world.getBlockState(session.pos).getBlock() != HardGymMod.DEADLIFT_BAR) {
                 releasePlayer(player, session);
-                player.sendMessage(new LiteralText("Подход остановлен: штанга недоступна.")
-                        .formatted(Formatting.GRAY), true);
+                player.sendMessage(new LiteralText("Подход остановлен: штанга недоступна.").formatted(Formatting.GRAY), true);
                 resetBar(session);
                 GymHud.showRecoveryOrHide(player);
                 iterator.remove();
@@ -146,15 +140,12 @@ public final class DeadliftManager {
                 if (session.staminaDrainTicker >= 20) {
                     session.staminaDrainTicker = 0;
                     int phase = animationForProgress(Math.round(session.progress));
-                    // Dynamic pulling stamina is accounted for per completed rep from %1RM.
-                    // Keep the hunger cost during the pull, but do not double-charge stamina here.
                     player.getHungerManager().addExhaustion(holdingHungerExhaustion(session.weightKg, phase));
                 }
             } else if (!session.pressing) {
                 session.staminaDrainTicker = 0;
             }
 
-            // Deadlift failure: no damage. The lifter simply loses the pull and drops the bar to the floor.
             if (!session.returning && session.progress > 0.5F && data.hardgym$getStamina() <= 0) {
                 failAndDrop(player, session);
                 iterator.remove();
@@ -185,7 +176,6 @@ public final class DeadliftManager {
                     session.returning = true;
                 }
             } else if (session.progress > 0.0F) {
-                // Releasing RMB does not freeze a deadlift in mid-air: gravity wins and it lowers back down.
                 session.progress -= 100.0F / 30.0F;
                 if (session.progress <= 0.0F) {
                     session.progress = 0.0F;
@@ -223,8 +213,7 @@ public final class DeadliftManager {
             playDropSound(current, 0.65F);
             releasePlayer(player, current);
             resetBar(current);
-            player.sendMessage(new LiteralText("Подход становой закончен: " + current.reps + " повт. × " + current.weightKg + " кг")
-                    .formatted(Formatting.GRAY), true);
+            player.sendMessage(new LiteralText("Подход становой закончен: " + current.reps + " повт. × " + current.weightKg + " кг").formatted(Formatting.GRAY), true);
             GymHud.showRecoveryOrHide(player);
         }
     }
@@ -245,10 +234,8 @@ public final class DeadliftManager {
         playDropSound(session, 1.0F);
         releasePlayer(player, session);
         resetBar(session);
-        player.sendMessage(new LiteralText("СИЛ НЕ ХВАТИЛО — ШТАНГА УПАЛА НА ПОЛ.")
-                .formatted(Formatting.RED), false);
+        player.sendMessage(new LiteralText("СИЛ НЕ ХВАТИЛО — ШТАНГА УПАЛА НА ПОЛ.").formatted(Formatting.RED), false);
         GymHud.showRecoveryOrHide(player);
-        // Intentionally no HP damage for deadlift failure.
     }
 
     private static void resetBar(DeadliftSession session) {
@@ -271,13 +258,10 @@ public final class DeadliftManager {
         double dz = player.getZ() - z;
         player.setPosition(x, y, z);
         if (!session.anchored) {
-            // Face the bar once on entry. Mouse look stays free during the set.
             player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
             session.anchored = true;
         } else if (dx * dx + dy * dy + dz * dz > 1.0E-8D) {
-            // Correct only position. Relative zero angles preserve even a newer client view.
-            player.networkHandler.requestTeleport(x, y, z, 0.0F, 0.0F,
-                    EnumSet.of(PlayerPositionLookS2CPacket.Flag.Y_ROT, PlayerPositionLookS2CPacket.Flag.X_ROT));
+            player.networkHandler.requestTeleport(x, y, z, 0.0F, 0.0F, EnumSet.of(PlayerPositionLookS2CPacket.Flag.Y_ROT, PlayerPositionLookS2CPacket.Flag.X_ROT));
         }
         player.setBodyYaw(yaw);
         player.setHeadYaw(yaw);
@@ -297,8 +281,7 @@ public final class DeadliftManager {
         GymPlayerData data = (GymPlayerData) player;
         int muscleLevel = GymMuscleStrength.legsLevel(data);
         int staminaCost = StrengthRepTable.staminaCostForTarget(session.targetReps);
-        if (muscleLevel < requiredLevel(session.weightKg) || session.reps >= session.targetReps
-                || data.hardgym$getStamina() < staminaCost) return false;
+        if (muscleLevel < requiredLevel(session.weightKg) || session.reps >= session.targetReps || data.hardgym$getStamina() < staminaCost) return false;
 
         int oldStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
         int oldLegsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
@@ -321,25 +304,22 @@ public final class DeadliftManager {
 
         if (session.weightKg > data.hardgym$getDeadliftPr()) {
             data.hardgym$setDeadliftPr(session.weightKg);
-            player.sendMessage(new LiteralText("НОВЫЙ PR В СТАНОВОЙ: " + session.weightKg + " кг!")
-                    .formatted(Formatting.LIGHT_PURPLE), false);
+            player.sendMessage(new LiteralText("НОВЫЙ PR В СТАНОВОЙ: " + session.weightKg + " кг!").formatted(Formatting.LIGHT_PURPLE), false);
         }
 
         int newStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
         int newLegsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
         int newDeadliftLevel = GymStats.levelForXp(data.hardgym$getDeadliftXp());
         if (newStrengthLevel > oldStrengthLevel) {
-            player.sendMessage(new LiteralText("HardGym: Strength теперь " + newStrengthLevel + "!")
-                    .formatted(Formatting.GOLD), false);
+            player.sendMessage(new LiteralText("HardGym: Strength теперь " + newStrengthLevel + "!").formatted(Formatting.GOLD), false);
         }
         if (newLegsLevel > oldLegsLevel) {
-            player.sendMessage(new LiteralText("HardGym: Legs теперь " + newLegsLevel + "!")
-                    .formatted(Formatting.GREEN), false);
+            player.sendMessage(new LiteralText("HardGym: Legs теперь " + newLegsLevel + "!").formatted(Formatting.GREEN), false);
         }
         if (newDeadliftLevel > oldDeadliftLevel) {
+            player.addExperience(10 * (newDeadliftLevel - oldDeadliftLevel));
             player.sendMessage(new LiteralText("HardGym: Становая Lv." + newDeadliftLevel + " — прыжок ~"
-                    + GymPhysicalStats.jumpHeightPercent(newDeadliftLevel) + "% от ванильного")
-                    .formatted(Formatting.AQUA), false);
+                + GymPhysicalStats.jumpHeightPercent(newDeadliftLevel) + "% от ванильного").formatted(Formatting.AQUA), false);
         }
         return true;
     }
@@ -368,16 +348,15 @@ public final class DeadliftManager {
         if (weightKg <= 260) return 20;
         if (weightKg <= 280) return 22;
         if (weightKg <= 300) return 24;
-        // Keep the old gates, then reach the station's maximum at muscle level 40.
         int maximumWeightKg = TRAINING_WEIGHTS[TRAINING_WEIGHTS.length - 1];
         return 24 + (int)Math.ceil((weightKg - 300) * 16.0D / (maximumWeightKg - 300));
     }
 
     private static int holdingStaminaDrain(int weightKg, int phase) {
         int base = weightKg <= 80 ? 2 : (weightKg <= 140 ? 3 : 4);
-        if (phase == 0) return base + 4; // hardest: breaking the bar from the floor
-        if (phase == 1) return base + 2; // around the knees
-        return base + 1;                 // near lockout
+        if (phase == 0) return base + 4;
+        if (phase == 1) return base + 2;
+        return base + 1;
     }
 
     private static float holdingHungerExhaustion(int weightKg, int phase) {
@@ -431,13 +410,11 @@ public final class DeadliftManager {
     }
 
     private static void playFloorTouchSound(DeadliftSession session) {
-        session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_FALL, SoundCategory.BLOCKS, 0.48F,
-                Math.max(0.58F, weightPitch(session.weightKg) - 0.08F));
+        session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_FALL, SoundCategory.BLOCKS, 0.48F, Math.max(0.58F, weightPitch(session.weightKg) - 0.08F));
     }
 
     private static void playDropSound(DeadliftSession session, float volume) {
-        session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_FALL, SoundCategory.BLOCKS, volume,
-                Math.max(0.50F, weightPitch(session.weightKg) - 0.16F));
+        session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_FALL, SoundCategory.BLOCKS, volume, Math.max(0.50F, weightPitch(session.weightKg) - 0.16F));
     }
 
     private static float weightPitch(int weightKg) {

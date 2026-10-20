@@ -33,8 +33,7 @@ public final class BenchPressManager {
     private static final Map<UUID, BenchSession> SESSIONS = new HashMap<>();
     private static final int[] TRAINING_WEIGHTS = BarbellLoad.reachableWeights(5);
 
-    private BenchPressManager() {
-    }
+    private BenchPressManager() {}
 
     public static boolean isTraining(UUID uuid) {
         return SESSIONS.containsKey(uuid);
@@ -73,8 +72,7 @@ public final class BenchPressManager {
 
         if (muscleLevel < required) {
             player.sendMessage(new LiteralText("Слишком тяжело для жима. Нужна сила груди и трицепса Lv."
-                    + required + " (среднее Chest/Triceps, сейчас Lv." + muscleLevel + ").")
-                    .formatted(Formatting.RED), true);
+                + required + " (среднее Chest/Triceps, сейчас Lv." + muscleLevel + ").").formatted(Formatting.RED), true);
             return;
         }
 
@@ -82,8 +80,7 @@ public final class BenchPressManager {
         int targetReps = StrengthRepTable.targetRepsWithFatigue(weightKg, oneRepMax, data.hardgym$getFatigue());
         int staminaCost = StrengthRepTable.staminaCostForTarget(targetReps);
         if (data.hardgym$getStamina() < staminaCost || data.hardgym$getFatigue() >= 95) {
-            player.sendMessage(new LiteralText("Ты слишком устал для подхода. Отдохни.")
-                    .formatted(Formatting.RED), true);
+            player.sendMessage(new LiteralText("Ты слишком устал для подхода. Отдохни.").formatted(Formatting.RED), true);
             return;
         }
 
@@ -126,18 +123,15 @@ public final class BenchPressManager {
                 releasePlayer(player, session);
                 setBenchAnimation(session.world, session.pos, 0);
                 setBenchActive(session.world, session.pos, false);
-                player.sendMessage(new LiteralText("Подход закончен: " + session.reps + " повт. × " + session.weightKg + " кг")
-                        .formatted(Formatting.GRAY), true);
+                player.sendMessage(new LiteralText("Подход закончен: " + session.reps + " повт. × " + session.weightKg + " кг").formatted(Formatting.GRAY), true);
                 GymHud.showRecoveryOrHide(player);
                 iterator.remove();
                 continue;
             }
 
-            if (player.getServerWorld() != session.world
-                    || !(session.world.getBlockState(session.pos).getBlock() instanceof BenchPressBlock)) {
+            if (player.getServerWorld() != session.world || !(session.world.getBlockState(session.pos).getBlock() instanceof BenchPressBlock)) {
                 releasePlayer(player, session);
-                player.sendMessage(new LiteralText("Подход остановлен: скамья недоступна.")
-                        .formatted(Formatting.GRAY), true);
+                player.sendMessage(new LiteralText("Подход остановлен: скамья недоступна.").formatted(Formatting.GRAY), true);
                 setBenchAnimation(session.world, session.pos, 0);
                 setBenchActive(session.world, session.pos, false);
                 GymHud.showRecoveryOrHide(player);
@@ -152,14 +146,11 @@ public final class BenchPressManager {
                 int holdProgress = 100 - (session.ticksRemaining * 100 / Math.max(1, session.ticksPerRep));
                 int holdAnim = animationForProgress(holdProgress);
 
-                // Dynamic reps are now paid for at the end of each rep according to %1RM.
-                // Static holding still drains stamina by bar position, but only while RMB is released.
                 if (!session.pressing) {
                     session.holdDrainTicker++;
                     if (session.holdDrainTicker >= 20) {
                         session.holdDrainTicker = 0;
-                        data.hardgym$setStamina(data.hardgym$getStamina()
-                                - holdingStaminaDrain(session.weightKg, holdAnim));
+                        data.hardgym$setStamina(data.hardgym$getStamina() - holdingStaminaDrain(session.weightKg, holdAnim));
                         player.getHungerManager().addExhaustion(holdingHungerExhaustion(session.weightKg, holdAnim));
                     }
                 } else {
@@ -180,17 +171,13 @@ public final class BenchPressManager {
                 if (session.damageTicker >= 20) {
                     session.damageTicker = 0;
                     player.damage(DamageSource.ANVIL, crushDamage(session.weightKg));
-                    // Being trapped under the bar is extremely taxing: FAT rises quickly
-                    // for every full second the player stays pinned.
-                    data.hardgym$setFatigue(data.hardgym$getFatigue()
-                            + pinnedFatiguePerSecond(session.weightKg));
+                    data.hardgym$setFatigue(data.hardgym$getFatigue() + pinnedFatiguePerSecond(session.weightKg));
                 }
 
                 session.hudTicker++;
                 if (session.hudTicker >= 4) {
                     session.hudTicker = 0;
-                    GymHud.showBenchPinned(player, session.weightKg, session.reps,
-                            data.hardgym$getFatigue(), Math.round(player.getHealth()));
+                    GymHud.showBenchPinned(player, session.weightKg, session.reps, data.hardgym$getFatigue(), Math.round(player.getHealth()));
                 }
                 continue;
             }
@@ -229,11 +216,9 @@ public final class BenchPressManager {
             if (session.hudTicker >= 4) {
                 session.hudTicker = 0;
                 if (session.pressing) {
-                    GymHud.showBench(player, session.weightKg, session.reps,
-                            data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
+                    GymHud.showBench(player, session.weightKg, session.reps, data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
                 } else {
-                    GymHud.showBenchWaiting(player, session.weightKg, session.reps,
-                            data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
+                    GymHud.showBenchWaiting(player, session.weightKg, session.reps, data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
                 }
             }
         }
@@ -250,8 +235,7 @@ public final class BenchPressManager {
             releasePlayer(player, current);
             setBenchAnimation(current.world, current.pos, 0);
             setBenchActive(current.world, current.pos, false);
-            player.sendMessage(new LiteralText("Подход закончен: " + current.reps + " повт. × " + current.weightKg + " кг")
-                    .formatted(Formatting.GRAY), true);
+            player.sendMessage(new LiteralText("Подход закончен: " + current.reps + " повт. × " + current.weightKg + " кг").formatted(Formatting.GRAY), true);
             GymHud.showRecoveryOrHide(player);
         }
     }
@@ -289,8 +273,7 @@ public final class BenchPressManager {
         playDroppedBarSound(session);
 
         player.sendMessage(new LiteralText("ТЕБЯ ПРИДАВИЛО " + session.weightKg + " КГ! +"
-                + instantFatigue + "% FAT. Shift — сбросить штангу.")
-                .formatted(Formatting.DARK_RED), false);
+            + instantFatigue + "% FAT. Shift — сбросить штангу.").formatted(Formatting.DARK_RED), false);
     }
 
     private static void lockPlayerToBench(ServerPlayerEntity player, BenchSession session) {
@@ -317,8 +300,6 @@ public final class BenchPressManager {
         double dy = player.getY() - y;
         double dz = player.getZ() - z;
         if (!session.anchored || dx * dx + dy * dy + dz * dz > 1.0E-8D) {
-            // Teleport once on entry, then only after an actual external displacement.
-            // Repeated position/rotation corrections can make the client jitter.
             player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
             session.anchored = true;
         }
@@ -352,8 +333,7 @@ public final class BenchPressManager {
         int staminaCost = StrengthRepTable.staminaCostForTarget(session.targetReps);
         int fatigueGain = StrengthRepTable.fatigueGainForRep(session.weightKg, session.targetReps, session.reps);
 
-        if (muscleLevel < required || session.reps >= session.targetReps
-                || data.hardgym$getStamina() < staminaCost) {
+        if (muscleLevel < required || session.reps >= session.targetReps || data.hardgym$getStamina() < staminaCost) {
             return false;
         }
 
@@ -378,13 +358,11 @@ public final class BenchPressManager {
             data.hardgym$setBenchEstimated1Rm(setEstimate);
         }
 
-        // Полный повтор дополнительно расходует энергию/голод.
         player.getHungerManager().addExhaustion(benchRepHungerExhaustion(session.weightKg));
 
         if (session.weightKg > data.hardgym$getBenchPressPr()) {
             data.hardgym$setBenchPressPr(session.weightKg);
-            player.sendMessage(new LiteralText("НОВЫЙ PR В ЖИМЕ: " + session.weightKg + " кг!")
-                    .formatted(Formatting.LIGHT_PURPLE), false);
+            player.sendMessage(new LiteralText("НОВЫЙ PR В ЖИМЕ: " + session.weightKg + " кг!").formatted(Formatting.LIGHT_PURPLE), false);
         }
 
         int newStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
@@ -393,21 +371,18 @@ public final class BenchPressManager {
         int newBenchLevel = GymMuscleStrength.benchLevel(data);
 
         if (newStrengthLevel > oldStrengthLevel) {
-            player.sendMessage(new LiteralText("HardGym: Strength теперь " + newStrengthLevel + "!")
-                    .formatted(Formatting.GOLD), false);
+            player.sendMessage(new LiteralText("HardGym: Strength теперь " + newStrengthLevel + "!").formatted(Formatting.GOLD), false);
         }
         if (newChestLevel > oldChestLevel) {
-            player.sendMessage(new LiteralText("HardGym: Chest теперь " + newChestLevel + "!")
-                    .formatted(Formatting.AQUA), false);
+            player.sendMessage(new LiteralText("HardGym: Chest теперь " + newChestLevel + "!").formatted(Formatting.AQUA), false);
         }
         if (newTricepsLevel > oldTricepsLevel) {
-            player.sendMessage(new LiteralText("HardGym: Triceps теперь " + newTricepsLevel + "!")
-                    .formatted(Formatting.BLUE), false);
+            player.sendMessage(new LiteralText("HardGym: Triceps теперь " + newTricepsLevel + "!").formatted(Formatting.BLUE), false);
         }
         if (newBenchLevel > oldBenchLevel) {
+            player.addExperience(10 * (newBenchLevel - oldBenchLevel));
             player.sendMessage(new LiteralText("HardGym: Жим Lv." + newBenchLevel + " — базовый урон "
-                    + String.format(java.util.Locale.ROOT, "%.1f", GymPhysicalStats.attackDamageForBenchLevel(newBenchLevel)))
-                    .formatted(Formatting.RED), false);
+                + String.format(java.util.Locale.ROOT, "%.1f", GymPhysicalStats.attackDamageForBenchLevel(newBenchLevel))).formatted(Formatting.RED), false);
         }
 
         return true;
@@ -423,7 +398,6 @@ public final class BenchPressManager {
     }
 
     public static int requiredLevel(int weightKg) {
-        // Chest and triceps start at level 1, so a beginner must be able to train them here.
         if (weightKg <= 40) return 1;
         if (weightKg <= 50) return 3;
         if (weightKg <= 60) return 3;
@@ -437,13 +411,11 @@ public final class BenchPressManager {
         if (weightKg <= 180) return 16;
         if (weightKg <= 200) return 18;
         if (weightKg <= 220) return 20;
-        // Keep the old gates, then reach the station's maximum at muscle level 40.
         int maximumWeightKg = TRAINING_WEIGHTS[TRAINING_WEIGHTS.length - 1];
         return 20 + (int)Math.ceil((weightKg - 220) * 20.0D / (maximumWeightKg - 220));
     }
 
     private static double effectiveOneRepMax(GymPlayerData data) {
-        // Records describe completed sets; current capacity comes only from the trained muscles.
         return maxUnlockedWeight(data) / 0.85D;
     }
 
@@ -457,8 +429,6 @@ public final class BenchPressManager {
             base = 3;
         }
 
-        // anim 0 = верхняя точка, anim 1 = середина, anim 2 = у груди.
-        // Чем ниже штанга, тем больше статическая нагрузка на игрока.
         if (anim == 2) {
             return base + 4;
         }
@@ -469,19 +439,17 @@ public final class BenchPressManager {
     }
 
     private static float holdingHungerExhaustion(int weightKg, int anim) {
-        // Расход за каждую секунду удержания штанги.
         float base = 0.08F + weightKg / 1800.0F;
         if (anim == 2) {
-            return base * 1.50F; // у груди тяжелее всего
+            return base * 1.50F;
         }
         if (anim == 1) {
             return base * 1.25F;
         }
-        return base; // верхняя точка
+        return base;
     }
 
     private static float benchRepHungerExhaustion(int weightKg) {
-        // Усиленный расход: 40 кг ~1.5, 100 кг ~2.1, 200 кг ~3.1 exhaustion за полный повтор.
         return 1.10F + weightKg / 100.0F;
     }
 
@@ -493,12 +461,10 @@ public final class BenchPressManager {
     }
 
     private static int pinnedFatigueInstant(int weightKg) {
-        // Immediate shock/stress from failing the lift: about 9–13 FAT on bench weights.
         return Math.min(18, 8 + weightKg / 40);
     }
 
     private static int pinnedFatiguePerSecond(int weightKg) {
-        // Continuous strain while trapped: roughly +2 to +4 FAT every second on bench.
         return Math.min(6, 2 + weightKg / 100);
     }
 
@@ -526,45 +492,35 @@ public final class BenchPressManager {
 
     private static void playUnrackSound(BenchSession session) {
         float pitch = weightPitch(session.weightKg) + 0.08F;
-        session.world.playSound(null, session.pos, SoundEvents.BLOCK_CHAIN_PLACE,
-                SoundCategory.BLOCKS, 0.75F, pitch);
-        session.world.playSound(null, session.pos, SoundEvents.BLOCK_IRON_TRAPDOOR_OPEN,
-                SoundCategory.BLOCKS, 0.45F, pitch + 0.05F);
+        session.world.playSound(null, session.pos, SoundEvents.BLOCK_CHAIN_PLACE, SoundCategory.BLOCKS, 0.75F, pitch);
+        session.world.playSound(null, session.pos, SoundEvents.BLOCK_IRON_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 0.45F, pitch + 0.05F);
     }
 
     private static void playRackSound(BenchSession session) {
         float pitch = weightPitch(session.weightKg);
-        session.world.playSound(null, session.pos, SoundEvents.BLOCK_CHAIN_PLACE,
-                SoundCategory.BLOCKS, 0.85F, pitch);
-        session.world.playSound(null, session.pos, SoundEvents.BLOCK_IRON_TRAPDOOR_CLOSE,
-                SoundCategory.BLOCKS, 0.60F, pitch - 0.05F);
+        session.world.playSound(null, session.pos, SoundEvents.BLOCK_CHAIN_PLACE, SoundCategory.BLOCKS, 0.85F, pitch);
+        session.world.playSound(null, session.pos, SoundEvents.BLOCK_IRON_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, 0.60F, pitch - 0.05F);
     }
 
     private static void playDroppedBarSound(BenchSession session) {
         float pitch = Math.max(0.55F, weightPitch(session.weightKg) - 0.12F);
-        session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_FALL,
-                SoundCategory.BLOCKS, 1.0F, pitch);
+        session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_FALL, SoundCategory.BLOCKS, 1.0F, pitch);
     }
 
     private static void playMovementSound(BenchSession session, int oldAnim, int newAnim, int progress) {
         float pitch = weightPitch(session.weightKg);
 
-        // 0 -> 1 on the first half of the rep = lowering the bar.
         if (oldAnim == 0 && newAnim == 1 && progress < 50) {
-            session.world.playSound(null, session.pos, SoundEvents.BLOCK_CHAIN_STEP,
-                    SoundCategory.BLOCKS, 0.32F, pitch - 0.08F);
+            session.world.playSound(null, session.pos, SoundEvents.BLOCK_CHAIN_STEP, SoundCategory.BLOCKS, 0.32F, pitch - 0.08F);
             return;
         }
 
-        // 2 -> 1 on the second half = pressing the bar away from the chest.
         if (oldAnim == 2 && newAnim == 1 && progress >= 50) {
-            session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_HIT,
-                    SoundCategory.BLOCKS, 0.42F, pitch + 0.06F);
+            session.world.playSound(null, session.pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 0.42F, pitch + 0.06F);
         }
     }
 
     private static float weightPitch(int weightKg) {
-        // Heavier bars sound a little deeper. 40 kg ~= 1.0, 200 kg ~= 0.68.
         return Math.max(0.68F, 1.08F - (weightKg - 40) * 0.0025F);
     }
 

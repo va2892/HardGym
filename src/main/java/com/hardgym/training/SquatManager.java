@@ -36,8 +36,7 @@ public final class SquatManager {
     private static final Map<UUID, SquatSession> SESSIONS = new HashMap<>();
     private static final int[] TRAINING_WEIGHTS = BarbellLoad.reachableWeights(7);
 
-    private SquatManager() {
-    }
+    private SquatManager() {}
 
     public static boolean isTraining(UUID uuid) {
         return SESSIONS.containsKey(uuid);
@@ -81,8 +80,7 @@ public final class SquatManager {
 
         if (muscleLevel < required) {
             player.sendMessage(new LiteralText("Слишком тяжело для приседа. Нужны ноги (Legs) Lv."
-                    + required + " (сейчас Lv." + muscleLevel + ").")
-                    .formatted(Formatting.RED), true);
+                 + required + " (сейчас Lv." + muscleLevel + ").").formatted(Formatting.RED), true);
             return;
         }
 
@@ -90,8 +88,7 @@ public final class SquatManager {
         int targetReps = StrengthRepTable.targetRepsWithFatigue(weightKg, oneRepMax, data.hardgym$getFatigue());
         int staminaCost = StrengthRepTable.staminaCostForTarget(targetReps);
         if (data.hardgym$getStamina() < staminaCost || data.hardgym$getFatigue() >= 95) {
-            player.sendMessage(new LiteralText("Ты слишком устал для приседа. Отдохни.")
-                    .formatted(Formatting.RED), true);
+            player.sendMessage(new LiteralText("Ты слишком устал для приседа. Отдохни.").formatted(Formatting.RED), true);
             return;
         }
 
@@ -133,18 +130,15 @@ public final class SquatManager {
                 releasePlayer(player, session);
                 setAnimation(session.world, session.pos, 0);
                 setActive(session.world, session.pos, false);
-                player.sendMessage(new LiteralText("Подход приседа закончен: " + session.reps + " повт. × " + session.weightKg + " кг")
-                        .formatted(Formatting.GRAY), true);
+                player.sendMessage(new LiteralText("Подход приседа закончен: " + session.reps + " повт. × " + session.weightKg + " кг").formatted(Formatting.GRAY), true);
                 GymHud.showRecoveryOrHide(player);
                 iterator.remove();
                 continue;
             }
 
-            if (player.getServerWorld() != session.world
-                    || session.world.getBlockState(session.pos).getBlock() != HardGymMod.SQUAT_RACK) {
+            if (player.getServerWorld() != session.world || session.world.getBlockState(session.pos).getBlock() != HardGymMod.SQUAT_RACK) {
                 releasePlayer(player, session);
-                player.sendMessage(new LiteralText("Подход остановлен: стойка недоступна.")
-                        .formatted(Formatting.GRAY), true);
+                player.sendMessage(new LiteralText("Подход остановлен: стойка недоступна.").formatted(Formatting.GRAY), true);
                 setAnimation(session.world, session.pos, 0);
                 setActive(session.world, session.pos, false);
                 GymHud.showRecoveryOrHide(player);
@@ -159,13 +153,11 @@ public final class SquatManager {
                 int holdProgress = 100 - (session.ticksRemaining * 100 / Math.max(1, session.ticksPerRep));
                 int holdAnim = animationForProgress(holdProgress);
 
-                // Rep stamina is based on relative %1RM. Static holding remains position-dependent.
                 if (!session.pressing) {
                     session.holdDrainTicker++;
                     if (session.holdDrainTicker >= 20) {
                         session.holdDrainTicker = 0;
-                        data.hardgym$setStamina(data.hardgym$getStamina()
-                                - holdingStaminaDrain(session.weightKg, holdAnim));
+                        data.hardgym$setStamina(data.hardgym$getStamina() - holdingStaminaDrain(session.weightKg, holdAnim));
                         player.getHungerManager().addExhaustion(holdingHungerExhaustion(session.weightKg, holdAnim));
                     }
                 } else {
@@ -186,16 +178,13 @@ public final class SquatManager {
                 if (session.damageTicker >= 20) {
                     session.damageTicker = 0;
                     player.damage(DamageSource.ANVIL, crushDamage(session.weightKg));
-                    // Staying crushed under a failed squat rapidly builds persistent fatigue.
-                    data.hardgym$setFatigue(data.hardgym$getFatigue()
-                            + pinnedFatiguePerSecond(session.weightKg));
+                    data.hardgym$setFatigue(data.hardgym$getFatigue() + pinnedFatiguePerSecond(session.weightKg));
                 }
 
                 session.hudTicker++;
                 if (session.hudTicker >= 4) {
                     session.hudTicker = 0;
-                    GymHud.showSquatPinned(player, session.weightKg, session.reps,
-                            data.hardgym$getFatigue(), Math.round(player.getHealth()));
+                    GymHud.showSquatPinned(player, session.weightKg, session.reps, data.hardgym$getFatigue(), Math.round(player.getHealth()));
                 }
                 continue;
             }
@@ -234,11 +223,9 @@ public final class SquatManager {
             if (session.hudTicker >= 4) {
                 session.hudTicker = 0;
                 if (session.pressing) {
-                    GymHud.showSquat(player, session.weightKg, session.reps,
-                            data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
+                    GymHud.showSquat(player, session.weightKg, session.reps, data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
                 } else {
-                    GymHud.showSquatWaiting(player, session.weightKg, session.reps,
-                            data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
+                    GymHud.showSquatWaiting(player, session.weightKg, session.reps, data.hardgym$getStamina(), data.hardgym$getFatigue(), progress);
                 }
             }
         }
@@ -251,8 +238,7 @@ public final class SquatManager {
             releasePlayer(player, current);
             setAnimation(current.world, current.pos, 0);
             setActive(current.world, current.pos, false);
-            player.sendMessage(new LiteralText("Подход приседа закончен: " + current.reps + " повт. × " + current.weightKg + " кг")
-                    .formatted(Formatting.GRAY), true);
+            player.sendMessage(new LiteralText("Подход приседа закончен: " + current.reps + " повт. × " + current.weightKg + " кг").formatted(Formatting.GRAY), true);
             GymHud.showRecoveryOrHide(player);
         }
     }
@@ -282,8 +268,7 @@ public final class SquatManager {
         BarbellBlockEntity.setExercisePhase(session.world, session.pos, 2.0F);
         playDroppedBarSound(session);
         player.sendMessage(new LiteralText("НЕ МОЖЕШЬ ВСТАТЬ С " + session.weightKg + " КГ! +"
-                + instantFatigue + "% FAT. Shift — сбросить штангу.")
-                .formatted(Formatting.DARK_RED), false);
+            + instantFatigue + "% FAT. Shift — сбросить штангу.").formatted(Formatting.DARK_RED), false);
     }
 
     private static void lockPlayer(ServerPlayerEntity player, SquatSession session) {
@@ -304,13 +289,10 @@ public final class SquatManager {
         double dz = player.getZ() - z;
         player.setPosition(x, y, z);
         if (!session.anchored) {
-            // Face the rack once on entry. Mouse look stays free during the set.
             player.networkHandler.requestTeleport(x, y, z, yaw, 0.0F);
             session.anchored = true;
         } else if (dx * dx + dy * dy + dz * dz > 1.0E-8D) {
-            // Correct only position. Relative zero angles preserve even a newer client view.
-            player.networkHandler.requestTeleport(x, y, z, 0.0F, 0.0F,
-                    EnumSet.of(PlayerPositionLookS2CPacket.Flag.Y_ROT, PlayerPositionLookS2CPacket.Flag.X_ROT));
+            player.networkHandler.requestTeleport(x, y, z, 0.0F, 0.0F, EnumSet.of(PlayerPositionLookS2CPacket.Flag.Y_ROT, PlayerPositionLookS2CPacket.Flag.X_ROT));
         }
         player.setBodyYaw(yaw);
         player.setHeadYaw(yaw);
@@ -333,8 +315,7 @@ public final class SquatManager {
         int staminaCost = StrengthRepTable.staminaCostForTarget(session.targetReps);
         int fatigueGain = StrengthRepTable.fatigueGainForRep(session.weightKg, session.targetReps, session.reps);
 
-        if (muscleLevel < required || session.reps >= session.targetReps
-                || data.hardgym$getStamina() < staminaCost) return false;
+        if (muscleLevel < required || session.reps >= session.targetReps || data.hardgym$getStamina() < staminaCost) return false;
 
         int oldStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
         int oldLegsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
@@ -359,25 +340,22 @@ public final class SquatManager {
 
         if (session.weightKg > data.hardgym$getSquatPr()) {
             data.hardgym$setSquatPr(session.weightKg);
-            player.sendMessage(new LiteralText("НОВЫЙ PR В ПРИСЕДЕ: " + session.weightKg + " кг!")
-                    .formatted(Formatting.LIGHT_PURPLE), false);
+            player.sendMessage(new LiteralText("НОВЫЙ PR В ПРИСЕДЕ: " + session.weightKg + " кг!").formatted(Formatting.LIGHT_PURPLE), false);
         }
 
         int newStrengthLevel = GymStats.levelForXp(data.hardgym$getStrengthXp());
         int newLegsLevel = GymStats.levelForXp(data.hardgym$getLegsXp());
         int newSquatLevel = GymStats.levelForXp(data.hardgym$getSquatXp());
         if (newStrengthLevel > oldStrengthLevel) {
-            player.sendMessage(new LiteralText("HardGym: Strength теперь " + newStrengthLevel + "!")
-                    .formatted(Formatting.GOLD), false);
+            player.sendMessage(new LiteralText("HardGym: Strength теперь " + newStrengthLevel + "!").formatted(Formatting.GOLD), false);
         }
         if (newLegsLevel > oldLegsLevel) {
-            player.sendMessage(new LiteralText("HardGym: Legs теперь " + newLegsLevel + "!")
-                    .formatted(Formatting.GREEN), false);
+            player.sendMessage(new LiteralText("HardGym: Legs теперь " + newLegsLevel + "!").formatted(Formatting.GREEN), false);
         }
         if (newSquatLevel > oldSquatLevel) {
+            player.addExperience(10 * (newSquatLevel - oldSquatLevel));
             player.sendMessage(new LiteralText("HardGym: Присед Lv." + newSquatLevel + " — скорость "
-                    + GymPhysicalStats.runSpeedPercent(newSquatLevel) + "% от ванильной")
-                    .formatted(Formatting.GREEN), false);
+                    + GymPhysicalStats.runSpeedPercent(newSquatLevel) + "% от ванильной").formatted(Formatting.GREEN), false);
         }
         return true;
     }
@@ -406,7 +384,6 @@ public final class SquatManager {
         if (weightKg <= 260) return 22;
         if (weightKg <= 280) return 24;
         if (weightKg <= 300) return 26;
-        // Keep the old gates, then reach the station's maximum at muscle level 40.
         int maximumWeightKg = TRAINING_WEIGHTS[TRAINING_WEIGHTS.length - 1];
         return 26 + (int)Math.ceil((weightKg - 300) * 14.0D / (maximumWeightKg - 300));
     }
@@ -441,12 +418,10 @@ public final class SquatManager {
     }
 
     private static int pinnedFatigueInstant(int weightKg) {
-        // Immediate failure penalty: scales with the bar, about 9–15 FAT across squat weights.
         return Math.min(18, 8 + weightKg / 40);
     }
 
     private static int pinnedFatiguePerSecond(int weightKg) {
-        // Rapid accumulation while the bar is still on the player: about +2 to +5 FAT/sec.
         return Math.min(6, 2 + weightKg / 100);
     }
 
