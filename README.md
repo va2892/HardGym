@@ -91,6 +91,14 @@ Dumbbell artwork by Digital Art Studio via Vecteezy, adapted for the HardGym ico
 
 # История версий
 
+## v0.10.72 - Experience for training sessions
+
+- Added 10 Minecraft experience points for each level gained in Bench Press, Squat, Deadlift or Biceps.
+- Awarded experience only when an exercise level increases.
+- Scaled rewards when multiple levels are gained at once.
+- Kept existing muscle progression, stamina costs and fatigue unchanged.
+- Significantly improved the part of the code created by the AI.
+
 ## v0.10.71 - Empty Hands and Workout Inventory Lock
 
 - Required both hands to be empty before starting bench press, squats or deadlifts; rejected starts show a message without spending stamina.
