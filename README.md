@@ -91,6 +91,10 @@ Dumbbell artwork by Digital Art Studio via Vecteezy, adapted for the HardGym ico
 
 # История версий
 
+## v0.10.73 - Fixed third-person camera bug
+
+- Third-person camera center point when the button in the center of the bench is pressed
+
 ## v0.10.72 - Experience for training sessions
 
 - Added 10 Minecraft experience points for each level gained in Bench Press, Squat, Deadlift or Biceps.

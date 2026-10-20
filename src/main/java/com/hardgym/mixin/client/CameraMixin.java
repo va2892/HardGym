@@ -25,9 +25,23 @@ public abstract class CameraMixin {
     @Shadow protected abstract void setRotation(float yaw, float pitch);
     @Shadow protected abstract void setPos(double x, double y, double z);
 
+    @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;clipToSpace(D)D"))
+    private void hardgym$centerBenchThirdPersonCamera(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
+        if (!thirdPerson || !(focusedEntity instanceof LivingEntity)) {
+            return;
+        }
+
+        BenchClientState.BenchMatch bench = BenchClientState.findActiveBench((LivingEntity) focusedEntity);
+
+        if (bench == null) {
+            return;
+        }
+
+        this.setPos(bench.pos.getX() + 0.5D, bench.pos.getY() + 0.65D, bench.pos.getZ() + 0.5D);
+    }
+
     @Inject(method = "update", at = @At("TAIL"))
-    private void hardgym$trainingFirstPersonCamera(BlockView area, Entity focusedEntity, boolean thirdPerson,
-                                                    boolean inverseView, float tickDelta, CallbackInfo ci) {
+    private void hardgym$trainingFirstPersonCamera(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
         if (thirdPerson || inverseView || !(focusedEntity instanceof LivingEntity)) return;
         LivingEntity entity = (LivingEntity) focusedEntity;
 
@@ -70,11 +84,8 @@ public abstract class CameraMixin {
         float anim = ExerciseClientState.phase(entity.world, squat.pos, squat.state, tickDelta);
         double drop = ExerciseAnimation.pose(anim, 0.0F, 0.25F, 0.50F);
         double standOffset = 0.34D;
-        // Stay in front of the grip as the upper body moves during the squat.
-        // This keeps the bar behind the first-person camera even in the bottom pose.
-        double firstPersonCameraOffset = standOffset - 0.20D
-                + StandingBarbellPose.PLAYER_SCALE * (StandingBarbellPose.squatUpperBodyZ(anim)
-                - StandingBarbellPose.squatUpperBodyZ(0.0F)) / 16.0D;
+        double firstPersonCameraOffset = standOffset - 0.20D + StandingBarbellPose.PLAYER_SCALE * (StandingBarbellPose.squatUpperBodyZ(anim)
+            - StandingBarbellPose.squatUpperBodyZ(0.0F)) / 16.0D;
         double camX = squat.pos.getX() + 0.5D + facing.getOffsetX() * firstPersonCameraOffset;
         double camY = squat.pos.getY() + 1.62D - drop;
         double camZ = squat.pos.getZ() + 0.5D + facing.getOffsetZ() * firstPersonCameraOffset;
